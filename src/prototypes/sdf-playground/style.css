@@ -9,11 +9,13 @@
 .sdf-controls label { display: grid; grid-template-columns: auto auto; flex: 1 1 210px; justify-content: space-between; }
 .sdf-controls input { grid-column: 1 / -1; width: 100%; }
 .sdf-tool-panels { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin: -26px 0 28px; }
+.sdf-application-panel { margin: -26px 0 16px; padding: 18px; border: 1px solid #36506f; border-radius: 14px; background: linear-gradient(135deg, #101a2c, #13253a); }
+.sdf-application { grid-template-columns: repeat(5, 1fr); }
 .sdf-tool-group { padding: 18px; border: 1px solid #273752; border-radius: 14px; background: #101a2c; }
 .sdf-tool-group .eyebrow { margin-bottom: 12px; }
 .sdf-operation { grid-template-columns: repeat(3, 1fr); }
 .sdf-view { grid-template-columns: repeat(2, 1fr); }
 .sdf-formula-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
 .sdf-formula-grid pre { margin: 0; height: 100%; }
-@media (max-width: 760px) { .sdf-tool-panels, .sdf-formula-grid { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .sdf-tool-panels, .sdf-formula-grid { grid-template-columns: 1fr; }.sdf-application { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 680px) { .sdf-status, .sdf-probe { position: static; margin: 8px; }.sdf-operation { grid-template-columns: repeat(2, 1fr); } }

@@ -18,6 +18,8 @@ uniform float uEdgeSoftness;
 uniform float uSmoothness;
 uniform int uOperation;
 uniform int uView;
+uniform int uApplication;
+uniform vec2 uPlayerPosition;
 out vec4 outColor;
 
 float sdCircle(vec2 point, float radius) {
@@ -49,13 +51,27 @@ float combineDistances(float distanceA, float distanceB) {
     return opSmoothUnion(distanceA, distanceB, uSmoothness);
 }
 
+float evaluateSceneDistance(vec2 point) {
+    float circleDistance = sdCircle(point - uCirclePosition, uCircleRadius);
+    if (uApplication == 2) return circleDistance;
+    if (uApplication == 3) {
+        float secondCircleDistance =
+            sdCircle(point - uBoxPosition, uCircleRadius * 0.86);
+        // Smooth union blends distance fields, which makes procedural energy
+        // or slime shapes appear to melt together.
+        return uOperation == 5
+            ? opSmoothUnion(circleDistance, secondCircleDistance, uSmoothness)
+            : min(circleDistance, secondCircleDistance);
+    }
+    float boxDistance = sdBox(point - uBoxPosition, uBoxHalfSize);
+    return combineDistances(circleDistance, boxDistance);
+}
+
 void main() {
     // Dividing by resolution.y preserves aspect ratio and creates one
     // centered mathematical coordinate system independent of canvas pixels.
     vec2 point = (gl_FragCoord.xy * 2.0 - uResolution) / uResolution.y;
-    float circleDistance = sdCircle(point - uCirclePosition, uCircleRadius);
-    float boxDistance = sdBox(point - uBoxPosition, uBoxHalfSize);
-    float distanceToBoundary = combineDistances(circleDistance, boxDistance);
+    float distanceToBoundary = evaluateSceneDistance(point);
     float antiAlias = max(uEdgeSoftness, 0.001);
     float boundary = 1.0 - smoothstep(0.0, antiAlias * 1.6, abs(distanceToBoundary));
 
@@ -66,8 +82,13 @@ void main() {
         float outline = 1.0 - smoothstep(uOutlineWidth, uOutlineWidth + antiAlias, abs(distanceToBoundary));
         float glow = exp(-abs(distanceToBoundary) / max(uGlowWidth, 0.001));
         color = mix(vec3(0.045, 0.075, 0.14), vec3(0.16, 0.76, 0.66), fill);
+        // Outline is simply a band around distance = 0; no extra mesh.
         color += vec3(1.0, 0.58, 0.25) * outline * 0.85;
         color += vec3(0.25, 0.55, 1.0) * glow * 0.42;
+        if (uApplication == 2) {
+            float centerFalloff = clamp(-distanceToBoundary / max(uCircleRadius, 0.001), 0.0, 1.0);
+            color += fill * centerFalloff * vec3(0.32, 0.10, 0.42);
+        }
     } else if (uView == 1) {
         float fade = exp(-abs(distanceToBoundary) * 3.2);
         float bands = 0.5 + 0.5 * cos(distanceToBoundary * 55.0);
@@ -85,6 +106,12 @@ void main() {
         float contour = 1.0 - smoothstep(0.38, 0.5, abs(sin(distanceToBoundary * 55.0)));
         color = vec3(0.045, 0.075, 0.14) + contour * vec3(0.30, 0.72, 0.82);
         color = mix(color, vec3(1.0, 0.68, 0.25), boundary);
+    }
+    if (uApplication == 2 || uApplication == 4) {
+        float playerDistance = length(point - uPlayerPosition);
+        float playerDisc = 1.0 - smoothstep(0.026, 0.034, playerDistance);
+        float playerRing = 1.0 - smoothstep(0.004, 0.010, abs(playerDistance - 0.045));
+        color = mix(color, vec3(1.0, 0.95, 0.72), max(playerDisc, playerRing));
     }
     outColor = vec4(color, 1.0);
 }`;

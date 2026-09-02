@@ -6,6 +6,8 @@ WebGL2 evaluates an analytic signed-distance function for every pixel. Negative 
 ## Core Idea
 An SDF is a function from position to signed boundary distance. Distance data can directly produce fill, outlines, glow, soft edges, contours, and boolean shape operations.
 
+The same CPU math can also answer gameplay questions: whether a Player is inside a spell, how far it is from a collision surface, or how deep it penetrates.
+
 ## Minimal Algorithm
 Evaluate Circle and Box distance, combine them with min/max/smooth-min, then classify or shade the resulting distance.
 
@@ -22,6 +24,13 @@ The fragment shader performs actual rendering-time SDF evaluation in centered, a
 
 ## Parameters to Play With
 Circle radius, Box half-size, outline, glow, edge softness, Smooth Union blend, operation, and debug view.
+
+## Application Modes
+- Playground: primitives, booleans, and raw distance
+- UI Outline: fill, outline, glow, and soft scalable edges
+- Spell Area: inside test and center falloff at a draggable Player point
+- Metaball: hard Union versus Smooth Union
+- Collision Probe: signed surface distance and penetration depth
 
 ## Common Alternatives
 Traditional geometry, vector paths, texture/alpha masks, SDF, and MSDF.

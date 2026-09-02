@@ -38,3 +38,21 @@ export function evaluateSdf(point: Point2, state: SdfState) {
   }, { x: state.boxHalfWidth, y: state.boxHalfHeight });
   return combineDistances(circleDistance, boxDistance, state.operation, state.smoothness);
 }
+
+export function evaluateApplicationSdf(point: Point2, state: SdfState) {
+  const circleDistance = sdCircle({
+    x: point.x - state.circlePosition.x,
+    y: point.y - state.circlePosition.y,
+  }, state.circleRadius);
+  if (state.application === "spell-area") return circleDistance;
+  if (state.application === "metaball") {
+    const secondCircleDistance = sdCircle({
+      x: point.x - state.boxPosition.x,
+      y: point.y - state.boxPosition.y,
+    }, state.circleRadius * 0.86);
+    return state.operation === "smooth-union"
+      ? opSmoothUnion(circleDistance, secondCircleDistance, state.smoothness)
+      : Math.min(circleDistance, secondCircleDistance);
+  }
+  return evaluateSdf(point, state);
+}

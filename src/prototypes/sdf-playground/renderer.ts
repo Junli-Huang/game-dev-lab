@@ -1,10 +1,13 @@
 import { compileShader, fragmentShaderSource, vertexShaderSource } from "./shader";
-import type { SdfOperation, SdfState, SdfView } from "./state";
+import type { ApplicationMode, SdfOperation, SdfState, SdfView } from "./state";
 
 const operationIndex: Record<SdfOperation, number> = {
   circle: 0, box: 1, union: 2, intersection: 3, subtract: 4, "smooth-union": 5,
 };
 const viewIndex: Record<SdfView, number> = { normal: 0, distance: 1, sign: 2, contour: 3 };
+const applicationIndex: Record<ApplicationMode, number> = {
+  playground: 0, "ui-outline": 1, "spell-area": 2, metaball: 3, collision: 4,
+};
 
 export class SdfRenderer {
   private gl: WebGL2RenderingContext;
@@ -31,7 +34,7 @@ export class SdfRenderer {
     gl.enableVertexAttribArray(position); gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
     this.uniforms = {};
-    for (const name of ["uResolution", "uCirclePosition", "uBoxPosition", "uCircleRadius", "uBoxHalfSize", "uOutlineWidth", "uGlowWidth", "uEdgeSoftness", "uSmoothness", "uOperation", "uView"]) {
+    for (const name of ["uResolution", "uCirclePosition", "uBoxPosition", "uPlayerPosition", "uCircleRadius", "uBoxHalfSize", "uOutlineWidth", "uGlowWidth", "uEdgeSoftness", "uSmoothness", "uOperation", "uView", "uApplication"]) {
       const location = gl.getUniformLocation(program, name);
       if (!location) throw new Error(`Missing shader uniform: ${name}`);
       this.uniforms[name] = location;
@@ -44,6 +47,7 @@ export class SdfRenderer {
     gl.uniform2f(u.uResolution, this.canvas.width, this.canvas.height);
     gl.uniform2f(u.uCirclePosition, state.circlePosition.x, state.circlePosition.y);
     gl.uniform2f(u.uBoxPosition, state.boxPosition.x, state.boxPosition.y);
+    gl.uniform2f(u.uPlayerPosition, state.playerPosition.x, state.playerPosition.y);
     gl.uniform1f(u.uCircleRadius, state.circleRadius);
     gl.uniform2f(u.uBoxHalfSize, state.boxHalfWidth, state.boxHalfHeight);
     gl.uniform1f(u.uOutlineWidth, state.outlineWidth);
@@ -52,6 +56,7 @@ export class SdfRenderer {
     gl.uniform1f(u.uSmoothness, state.smoothness);
     gl.uniform1i(u.uOperation, operationIndex[state.operation]);
     gl.uniform1i(u.uView, viewIndex[state.view]);
+    gl.uniform1i(u.uApplication, applicationIndex[state.application]);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 }

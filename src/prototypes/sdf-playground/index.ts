@@ -1,7 +1,7 @@
 import type { PrototypeDefinition } from "../../app/types";
 import { metadata } from "./metadata";
 import { mountSdfPlayground } from "./prototype";
-import { defaultSdfState, type SdfOperation, type SdfView } from "./state";
+import { defaultSdfState, type ApplicationMode, type SdfOperation, type SdfView } from "./state";
 import "./style.css";
 
 export const sdfPlayground: PrototypeDefinition = {
@@ -21,6 +21,16 @@ export const sdfPlayground: PrototypeDefinition = {
           <label>Edge Softness <output id="softness-value">0.008</output><input id="softness" type="range" min="0.001" max="0.04" step="0.001" value="0.008"></label>
           <label>Smooth Union Blend <output id="smoothness-value">0.12</output><input id="smoothness" type="range" min="0.01" max="0.40" step="0.01" value="0.12"></label>
         </section>
+        <section class="sdf-application-panel">
+          <div class="flow-tool-heading"><p class="eyebrow">Application</p><span>What the same distance function means in a game</span></div>
+          <div id="application" class="segmented-control sdf-application">
+            <button data-value="playground" aria-pressed="false" title="Playground — Explore primitives, booleans and raw distance">Playground</button>
+            <button data-value="ui-outline" class="active" aria-pressed="true" title="UI Outline — One distance creates fill, outline, glow and soft edges">UI Outline</button>
+            <button data-value="spell-area" aria-pressed="false" title="Spell Area — Drag the Player and query range, sign and falloff">Spell Area</button>
+            <button data-value="metaball" aria-pressed="false" title="Metaball — Compare hard Union with Smooth Union">Metaball</button>
+            <button data-value="collision" aria-pressed="false" title="Collision Probe — Drag the Player to inspect surface distance and penetration">Collision Probe</button>
+          </div>
+        </section>
         <section class="sdf-tool-panels">
           <div class="sdf-tool-group"><p class="eyebrow">Operation</p><div id="operation" class="segmented-control sdf-operation">
             <button data-value="circle" aria-pressed="false" title="Circle — Evaluate only sdCircle">Circle</button>
@@ -31,14 +41,16 @@ export const sdfPlayground: PrototypeDefinition = {
             <button data-value="smooth-union" aria-pressed="false" title="Smooth Union — Smooth minimum blend">Smooth Union</button>
           </div></div>
           <div class="sdf-tool-group"><p class="eyebrow">Debug View</p><div id="sdf-view" class="segmented-control sdf-view">
-            <button data-value="normal" aria-pressed="false" title="Normal — Fill, outline, glow and soft edge">Normal</button>
-            <button data-value="distance" class="active" aria-pressed="true" title="Distance — Signed distance colors and bands">Distance</button>
+            <button data-value="normal" class="active" aria-pressed="true" title="Normal — Fill, outline, glow and soft edge">Normal</button>
+            <button data-value="distance" aria-pressed="false" title="Distance — Signed distance colors and bands">Distance</button>
             <button data-value="sign" aria-pressed="false" title="Sign — Negative inside, positive outside">Sign</button>
             <button data-value="contour" aria-pressed="false" title="Contour — Equal-distance lines">Contour</button>
           </div></div>
         </section>
         <article class="explanation">
-          <section><h2>What You Are Seeing</h2><p>SDF is a function <code>f(position) → signed distance</code>. Negative means inside, zero is the boundary, and positive means outside. This demo evaluates analytic formulas in a fragment shader for every pixel.</p></section>
+          <section><h2>What You Are Seeing</h2><p>SDF is a function <code>f(position) → signed distance</code>. The Application changes what that distance means; Debug View reveals the same underlying field as Normal, Distance, Sign or Contour.</p></section>
+          <section><h2>Why Games Care</h2><p>One spatial distance can serve Rendering, VFX, UI and Gameplay Queries. The GPU uses it for pixels; the CPU uses the same math to test a Player against a spell or collision shape.</p></section>
+          <section><h2>One Distance Function</h2><p><code>d &lt; 0</code> → Inside. <code>abs(d) &lt; width</code> → Outline. <code>exp(-abs(d)·k)</code> → Glow. <code>smoothstep</code> → Soft Edge. <code>d(player)</code> → Trigger/Collision. <code>smoothMin(a,b)</code> → Metaball fusion.</p></section>
           <section><h2>Core Idea</h2><p>The shape is not drawn as geometry. Each pixel evaluates Circle and Box distance, combines those values, then converts the result into fill, outline, glow, sign colors or equal-distance contours.</p></section>
           <section><h2>Minimal Algorithm</h2><pre><code>float dCircle = sdCircle(p - circlePos, radius);
 float dBox = sdBox(p - boxPos, boxSize);
@@ -55,7 +67,7 @@ return length(max(q, 0.0))
           <section><h2>Implementation</h2><p>Canvas pixels are converted to centered coordinates with aspect correction. WebGL2 evaluates the actual SDF. The CPU duplicates the same formulas only for the interactive Probe; it never renders the shapes.</p></section>
           <section><h2>Analytic vs Texture SDF</h2><p>This is an analytic SDF: formulas evaluate distance live. Font rendering often uses a texture SDF, where precomputed distances are sampled from an image.</p></section>
           <section><h2>Common Alternatives</h2><p>Traditional geometry, Canvas/vector paths, texture masks and alpha textures draw shapes differently. MSDF preserves sharp text corners using multiple channels.</p></section>
-          <section><h2>Where Games Use This</h2><p>UI outlines, text, health-bar shapes, minimap masks, procedural icons, glow, soft shadows, VFX and collision queries. This is 2D Fragment SDF—not full 3D ray marching.</p></section>
+          <section><h2>Where Games Use This</h2><p><strong>UI/Text:</strong> outlines, glow and scalable edges. <strong>VFX:</strong> spell circles, energy fields, slime and masks. <strong>Gameplay:</strong> triggers, damage falloff and collision queries. <strong>Rendering:</strong> soft shadows, procedural geometry and ray marching. This Prototype validates only foundational 2D uses.</p></section>
           <section><h2>Next Experiments</h2><p>Rounded Box, Capsule, transforms, repetition, shells, smooth subtraction, soft shadows, metaballs, Text SDF/MSDF and 3D SDF Ray Marching.</p></section>
         </article>
       </main>`;
@@ -78,6 +90,18 @@ return length(max(q, 0.0))
     };
     bindSegments<SdfOperation>("operation", (value) => { state.operation = value; });
     bindSegments<SdfView>("sdf-view", (value) => { state.view = value; });
+    bindSegments<ApplicationMode>("application", (value) => {
+      state.application = value;
+      if (value === "metaball" && state.operation !== "smooth-union") {
+        state.operation = "union";
+        const control = container.querySelector<HTMLElement>("#operation")!;
+        control.querySelectorAll("button").forEach((button) => {
+          const active = button.dataset.value === "union";
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", String(active));
+        });
+      }
+    });
     return mounted.destroy;
   },
 };
