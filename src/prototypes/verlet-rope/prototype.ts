@@ -49,10 +49,11 @@ export function mountVerletRope(canvas: HTMLCanvasElement, settings: RopeSetting
     } else {
       // Discard time spent paused so Resume never tries to catch up.
       accumulator = 0;
+      // There is no physics step while paused, so synchronize only for
+      // interactive inspection. During normal playback, physics exclusively
+      // owns simulation state and rendering remains read-only.
+      simulation.synchronizeDraggedPoint();
     }
-    // A paused simulation still follows the input target for inspection, but
-    // pointer events themselves never mutate point positions.
-    simulation.synchronizeDraggedPoint();
     renderRope(context, simulation, debug);
     frames += 1;
     if (time - fpsTime >= 500) { fps = Math.round(frames * 1000 / (time - fpsTime)); frames = 0; fpsTime = time; }
