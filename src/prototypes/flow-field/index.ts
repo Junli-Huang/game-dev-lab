@@ -16,14 +16,14 @@ export const flowField: PrototypeDefinition = {
           <button id="pause">Pause</button><button id="reset" class="secondary">Reset</button>
           <label>Agents <output id="agents-value">100</output><input id="agents" type="range" min="10" max="500" step="10" value="100"></label>
           <label>Speed <output id="speed-value">70</output><input id="speed" type="range" min="20" max="150" step="5" value="70"></label>
-          <label>Interaction Mode<select id="interaction"><option value="target">Set Target</option><option value="obstacle">Paint Obstacle</option><option value="erase">Erase Obstacle</option><option value="spawn">Spawn Agents</option></select></label>
+          <label>Interaction Mode<select id="interaction"><option value="target">Set Target</option><option value="obstacle">Paint Obstacle</option><option value="erase">Erase Obstacle</option><option value="mud">Paint Mud</option><option value="terrain">Erase Terrain</option><option value="spawn">Spawn Agents</option></select></label>
           <label>View Mode<select id="view"><option value="normal">Normal</option><option value="cost">Cost Field</option><option value="integration">Integration Field</option><option value="direction">Direction Field</option></select></label>
           <label class="check"><input id="show-agents" type="checkbox" checked> Show Agents</label>
         </section>
-        <div class="flow-legend"><span style="--legend:#6ee7c7">Agents</span><span style="--legend:#ffbe55">Shared target</span><span style="--legend:#29344a">Obstacle</span><span style="--legend:#7cd7ff">Direction</span></div>
+        <div class="flow-legend"><span style="--legend:#6ee7c7">Agents</span><span style="--legend:#ffbe55">Shared target</span><span style="--legend:#60452f">Mud · Cost 4</span><span style="--legend:#29344a">Obstacle</span><span style="--legend:#7cd7ff">Direction</span></div>
         <article class="explanation">
           <section><h2>What You Are Seeing</h2><p>Instead of Agent 1 → A*, Agent 2 → A*, and so on, the target builds one shared field. Every agent then asks only: “Which direction does my current cell point?”</p></section>
-          <section><h2>Core Idea</h2><p><strong>Cost</strong> says what a cell costs to enter. <strong>Integration</strong> says the total cost from that cell to the target. <strong>Direction</strong> chooses the neighboring step with the lowest edge cost plus remaining integration cost.</p></section>
+          <section><h2>Core Idea</h2><p><strong>movementCost is the cost of entering a cell.</strong> Integration accumulates that traversal cost, and Direction chooses the neighboring step with the lowest edge cost plus remaining integration cost. A short route through 5 Mud cells costs 5×4 = 20, while 8 Normal cells cost 8×1 = 8—so the longer route wins.</p></section>
           <section><h2>Minimal Algorithm</h2><pre><code>integration[target] = 0;
 while (frontier.length) {
   const current = popLowest(frontier);
@@ -38,9 +38,10 @@ cell.direction = directionTo(
 
 agent.position +=
   field.cellAt(agent.position).direction * speed * dt;</code></pre></section>
-          <section><h2>Implementation</h2><p>The 36×24 grid uses eight neighbors. Straight movement costs 1 and diagonal movement costs √2; corner cutting through walls is forbidden. Direction selects the step minimizing <code>edgeCost + neighbor.integrationCost</code>. Map edits rebuild the field instantly. Agents move on a fixed 60 Hz step.</p></section>
+          <section><h2>Implementation</h2><p>Normal cells cost 1 to enter and Mud costs 4. The 36×24 grid uses eight neighbors: straight travel multiplies cost by 1 and diagonal travel by √2. Map or terrain edits rebuild the shared field instantly.</p></section>
           <section><h2>Code Structure</h2><p><code>grid.ts</code> owns coordinates and neighbors; <code>flow-field.ts</code> builds integration and direction; <code>simulation.ts</code> moves agents and rebuilds fields; <code>renderer.ts</code> displays normal and debug views.</p></section>
-          <section><h2>Parameters to Play With</h2><p>Set a new target and watch every agent turn. Paint a wall across the current route, inspect Integration costs, then switch to Direction arrows. Raise the count to 500 to see one field remain shared.</p></section>
+          <section><h2>Parameters to Play With</h2><p>Paint Mud across a route and watch the whole crowd choose a longer but cheaper path; erase it to restore the direct route. Cost shows 1, 4, and ∞, while Integration exposes the accumulated result.</p></section>
+          <section><h2>Cost Is Not Speed</h2><p>Mud affects pathfinding preference only. Agents do not read terrain and do not move slower on Mud—the penalty is already precomputed into the shared Flow Field.</p></section>
           <section><h2>When It Fits</h2><p>Flow fields are strong when many units share a goal. If every unit has a completely different target, repeatedly rebuilding separate full-map fields may cost more than individual path searches.</p></section>
           <section><h2>Common Alternatives</h2><p>A* finds a focused single path; Dijkstra explores by cost; NavMesh handles continuous walkable space; hierarchical A* reduces large-map search; steering handles local movement rather than global routing.</p></section>
           <section><h2>Where Games Use This</h2><p>RTS armies, tower-defense enemies, zombie hordes, large crowds and mass enemy AI.</p></section>

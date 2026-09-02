@@ -14,6 +14,11 @@ A 36×24 grid uses eight neighbors, straight cost 1, diagonal cost √2, and no 
 
 V0.1 has no local avoidance, steering, or agent collision. Agents follow the direction of their current cell and may overlap or behave poorly near cell boundaries.
 
+## Terrain Cost
+Normal cells cost 1 to enter. Mud cells cost 4.
+
+The integration field accumulates traversal cost rather than geometric distance, so agents may choose a longer but cheaper route. Mud changes pathfinding preference only; it does not reduce actual agent speed.
+
 ## Code Structure
 - `cell.ts`: field state
 - `grid.ts`: coordinates and neighbors

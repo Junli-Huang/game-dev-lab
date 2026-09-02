@@ -1,7 +1,7 @@
 import { renderFlowField, type FieldView } from "./renderer";
 import { FlowSimulation, type FlowSettings } from "./simulation";
 
-export type InteractionMode = "target" | "obstacle" | "erase" | "spawn";
+export type InteractionMode = "target" | "obstacle" | "erase" | "mud" | "terrain" | "spawn";
 
 export function mountFlowField(canvas: HTMLCanvasElement, settings: FlowSettings, state: { mode: InteractionMode; view: FieldView; showAgents: boolean }, stats: HTMLElement, onAgentCount: (count: number) => void) {
   const context = canvas.getContext("2d");
@@ -24,6 +24,8 @@ export function mountFlowField(canvas: HTMLCanvasElement, settings: FlowSettings
     if (state.mode === "target" && simulation.setTarget(pointer.cellX, pointer.cellY)) fieldBuilds += 1;
     if (state.mode === "obstacle" && simulation.setObstacle(pointer.cellX, pointer.cellY, true)) fieldBuilds += 1;
     if (state.mode === "erase" && simulation.setObstacle(pointer.cellX, pointer.cellY, false)) fieldBuilds += 1;
+    if (state.mode === "mud" && simulation.setMovementCost(pointer.cellX, pointer.cellY, 4)) fieldBuilds += 1;
+    if (state.mode === "terrain" && simulation.setMovementCost(pointer.cellX, pointer.cellY, 1)) fieldBuilds += 1;
   };
   canvas.onpointerdown = (event) => {
     painting = true;
@@ -41,7 +43,7 @@ export function mountFlowField(canvas: HTMLCanvasElement, settings: FlowSettings
     if (state.mode === "spawn") {
       // Pointer input records spawn intent; the fixed update owns Agent state.
       spawnPosition = { x: pointer.x, y: pointer.y };
-    } else if (state.mode === "obstacle" || state.mode === "erase") applyPointer(event);
+    } else if (state.mode === "obstacle" || state.mode === "erase" || state.mode === "mud" || state.mode === "terrain") applyPointer(event);
   };
   canvas.onpointerup = canvas.onpointercancel = () => {
     painting = false;

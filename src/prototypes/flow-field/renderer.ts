@@ -8,14 +8,19 @@ export function renderFlowField(context: CanvasRenderingContext2D, simulation: F
 
   for (const cell of grid.cells) {
     const left = cell.x * grid.cellSize; const top = cell.y * grid.cellSize;
+    // Terrain is the base layer. Field debug is drawn over it with transparency
+    // so weighted cells remain recognizable beneath costs and directions.
     if (!cell.walkable) context.fillStyle = "#29344a";
-    else if (view === "integration" && Number.isFinite(cell.integrationCost)) {
-      const intensity = Math.max(0, 1 - cell.integrationCost / 45);
-      context.fillStyle = `rgb(${18 + intensity * 20}, ${34 + intensity * 85}, ${55 + intensity * 72})`;
-    } else context.fillStyle = (cell.x + cell.y) % 2 ? "#122039" : "#15243e";
+    else if (cell.movementCost === 4) context.fillStyle = (cell.x + cell.y) % 2 ? "#60452f" : "#684b32";
+    else context.fillStyle = (cell.x + cell.y) % 2 ? "#122039" : "#15243e";
     context.fillRect(left, top, grid.cellSize, grid.cellSize);
 
-    if (view === "cost") drawCellText(context, cell.walkable ? "1" : "∞", left, top, grid.cellSize);
+    if (view === "integration" && cell.walkable && Number.isFinite(cell.integrationCost)) {
+      const intensity = Math.max(0, 1 - cell.integrationCost / 60);
+      context.fillStyle = `rgba(24, 145, 154, ${0.18 + intensity * 0.48})`;
+      context.fillRect(left, top, grid.cellSize, grid.cellSize);
+    }
+    if (view === "cost") drawCellText(context, cell.walkable ? String(cell.movementCost) : "∞", left, top, grid.cellSize);
     if (view === "integration") drawCellText(context, Number.isFinite(cell.integrationCost) ? cell.integrationCost.toFixed(0) : "∞", left, top, grid.cellSize);
     if (view === "direction" && cell.walkable && cell !== simulation.target) drawDirection(context, left + grid.cellSize / 2, top + grid.cellSize / 2, cell.direction.x, cell.direction.y);
   }

@@ -18,6 +18,14 @@ export class FlowSimulation {
     // Two offset walls make the initial field visibly bend without forming a maze.
     for (let y = 3; y < 17; y += 1) if (y < 9 || y > 11) this.grid.cell(18, y)!.walkable = false;
     for (let x = 7; x < 16; x += 1) if (x < 11 || x > 12) this.grid.cell(x, 14)!.walkable = false;
+    // The geometrically short route crosses this mud band and the wall gap.
+    // At cost 4, the field prefers a longer route over normal ground.
+    for (let y = 7; y <= 13; y += 1) {
+      for (let x = 13; x <= 22; x += 1) {
+        const cell = this.grid.cell(x, y)!;
+        if (cell.walkable) cell.movementCost = 4;
+      }
+    }
     this.target = this.grid.cell(29, 12)!;
     this.rebuildField();
     // Reset means fresh simulation state, not merely restoring the desired
@@ -46,6 +54,17 @@ export class FlowSimulation {
     const cell = this.grid.cell(x, y);
     if (!cell || cell === this.target || cell.walkable === !blocked) return false;
     cell.walkable = !blocked;
+    this.rebuildField();
+    return true;
+  }
+
+  setMovementCost(x: number, y: number, movementCost: number) {
+    const cell = this.grid.cell(x, y);
+    if (!cell || cell === this.target) return false;
+    const changed = !cell.walkable || cell.movementCost !== movementCost;
+    if (!changed) return false;
+    cell.walkable = true;
+    cell.movementCost = movementCost;
     this.rebuildField();
     return true;
   }
