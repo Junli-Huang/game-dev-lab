@@ -1,0 +1,19 @@
+.sdf-demo { position: relative; }
+.sdf-demo canvas { display: block; width: 100%; height: auto; touch-action: none; border-radius: 9px; cursor: grab; }
+.sdf-demo canvas:active { cursor: grabbing; }
+.sdf-status { position: absolute; top: 22px; left: 22px; padding: 7px 10px; border-radius: 7px; background: #091223cc; color: #bffced; font: 700 .7rem ui-monospace, monospace; }
+.sdf-probe { position: absolute; right: 22px; bottom: 22px; display: grid; min-width: 270px; padding: 10px 12px; border: 1px solid #445778; border-radius: 9px; background: #091223e8; color: #aebdd2; font: .72rem ui-monospace, monospace; }
+.sdf-probe strong { color: #ffbe55; }
+.sdf-error { padding: 24px; border: 1px solid #ff718a; border-radius: 9px; background: #351827; color: #ffc4cf; }
+.sdf-controls { align-items: flex-start; }
+.sdf-controls label { display: grid; grid-template-columns: auto auto; flex: 1 1 210px; justify-content: space-between; }
+.sdf-controls input { grid-column: 1 / -1; width: 100%; }
+.sdf-tool-panels { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin: -26px 0 28px; }
+.sdf-tool-group { padding: 18px; border: 1px solid #273752; border-radius: 14px; background: #101a2c; }
+.sdf-tool-group .eyebrow { margin-bottom: 12px; }
+.sdf-operation { grid-template-columns: repeat(3, 1fr); }
+.sdf-view { grid-template-columns: repeat(2, 1fr); }
+.sdf-formula-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+.sdf-formula-grid pre { margin: 0; height: 100%; }
+@media (max-width: 760px) { .sdf-tool-panels, .sdf-formula-grid { grid-template-columns: 1fr; } }
+@media (max-width: 680px) { .sdf-status, .sdf-probe { position: static; margin: 8px; }.sdf-operation { grid-template-columns: repeat(2, 1fr); } }
