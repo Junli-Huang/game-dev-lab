@@ -16,9 +16,29 @@ export const flowField: PrototypeDefinition = {
           <button id="pause">Pause</button><button id="reset" class="secondary">Reset</button>
           <label>Agents <output id="agents-value">100</output><input id="agents" type="range" min="10" max="500" step="10" value="100"></label>
           <label>Speed <output id="speed-value">70</output><input id="speed" type="range" min="20" max="150" step="5" value="70"></label>
-          <label>Interaction Mode<select id="interaction"><option value="target">Set Target</option><option value="obstacle">Paint Obstacle</option><option value="erase">Erase Obstacle</option><option value="mud">Paint Mud</option><option value="terrain">Erase Terrain</option><option value="spawn">Spawn Agents</option></select></label>
-          <label>View Mode<select id="view"><option value="normal">Normal</option><option value="cost">Cost Field</option><option value="integration">Integration Field</option><option value="direction">Direction Field</option></select></label>
           <label class="check"><input id="show-agents" type="checkbox" checked> Show Agents</label>
+        </section>
+        <section class="flow-tool-panels" aria-label="Flow Field tools">
+          <div class="flow-tool-group">
+            <div class="flow-tool-heading"><p class="eyebrow">Interaction</p><span>What the pointer changes</span></div>
+            <div id="interaction" class="segmented-control interaction-segments">
+              <button data-value="target" class="active" aria-pressed="true" title="Target — Click a walkable cell to set the shared target">Target</button>
+              <button data-value="obstacle" aria-pressed="false" title="Obstacle — Paint unwalkable cells">Obstacle</button>
+              <button data-value="erase" aria-pressed="false" title="Erase — Remove obstacles while preserving underlying terrain cost">Erase</button>
+              <button data-value="mud" aria-pressed="false" title="Mud — Paint movement cost 4">Mud</button>
+              <button data-value="terrain" aria-pressed="false" title="Normal — Restore movement cost 1">Normal</button>
+              <button data-value="spawn" aria-pressed="false" title="Spawn — Hold and drag to create agents at 30 per second">Spawn</button>
+            </div>
+          </div>
+          <div class="flow-tool-group">
+            <div class="flow-tool-heading"><p class="eyebrow">Debug View</p><span>How field data is displayed</span></div>
+            <div id="view" class="segmented-control view-segments">
+              <button data-value="normal" class="active" aria-pressed="true" title="Normal — Map, target, terrain and agents">Normal</button>
+              <button data-value="cost" aria-pressed="false" title="Cost — Cost to enter each cell: 1, 4, or ∞">Cost</button>
+              <button data-value="integration" aria-pressed="false" title="Integration — Accumulated traversal cost to the target">Integration</button>
+              <button data-value="direction" aria-pressed="false" title="Direction — Local direction selected for each cell">Direction</button>
+            </div>
+          </div>
         </section>
         <div class="flow-legend"><span style="--legend:#6ee7c7">Agents</span><span style="--legend:#ffbe55">Shared target</span><span style="--legend:#60452f">Mud · Cost 4</span><span style="--legend:#29344a">Obstacle</span><span style="--legend:#7cd7ff">Direction</span></div>
         <article class="explanation">
@@ -57,8 +77,21 @@ agent.position +=
     agents.oninput = () => { agentsValue.value = agents.value; mounted.simulation.setAgentCount(Number(agents.value)); };
     const speed = container.querySelector<HTMLInputElement>("#speed")!;
     speed.oninput = () => { settings.agentSpeed = Number(speed.value); container.querySelector<HTMLOutputElement>("#speed-value")!.value = speed.value; };
-    container.querySelector<HTMLSelectElement>("#interaction")!.onchange = (event) => { state.mode = (event.target as HTMLSelectElement).value as InteractionMode; };
-    container.querySelector<HTMLSelectElement>("#view")!.onchange = (event) => { state.view = (event.target as HTMLSelectElement).value as FieldView; };
+    const bindSegments = <T extends string>(id: string, onChange: (value: T) => void) => {
+      const control = container.querySelector<HTMLElement>(`#${id}`)!;
+      control.onclick = (event) => {
+        const button = (event.target as HTMLElement).closest<HTMLButtonElement>("button");
+        if (!button?.dataset.value) return;
+        control.querySelectorAll("button").forEach((item) => {
+          const selected = item === button;
+          item.classList.toggle("active", selected);
+          item.setAttribute("aria-pressed", String(selected));
+        });
+        onChange(button.dataset.value as T);
+      };
+    };
+    bindSegments<InteractionMode>("interaction", (value) => { state.mode = value; });
+    bindSegments<FieldView>("view", (value) => { state.view = value; });
     container.querySelector<HTMLInputElement>("#show-agents")!.onchange = (event) => { state.showAgents = (event.target as HTMLInputElement).checked; };
     const pause = container.querySelector<HTMLButtonElement>("#pause")!;
     pause.onclick = () => { mounted.togglePause(); pause.textContent = mounted.isPaused() ? "Resume" : "Pause"; };

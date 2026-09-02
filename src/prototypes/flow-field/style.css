@@ -2,9 +2,21 @@
 .flow-demo canvas { touch-action: none; image-rendering: auto; }
 .flow-controls { align-items: flex-start; }
 .flow-controls label { display: grid; grid-template-columns: auto auto; flex: 1 1 170px; justify-content: space-between; }
-.flow-controls input, .flow-controls select { grid-column: 1 / -1; width: 100%; }
-.flow-controls select { padding: 8px; border: 1px solid #354766; border-radius: 7px; background: #111d34; color: #eaf1ff; }
+.flow-controls input { grid-column: 1 / -1; width: 100%; }
+.flow-tool-panels { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin: -26px 0 28px; }
+.flow-tool-group { padding: 18px; border: 1px solid #273752; border-radius: 14px; background: #101a2c; }
+.flow-tool-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.flow-tool-heading .eyebrow { margin: 0; }
+.flow-tool-heading span { color: #71829e; font-size: .72rem; }
+.segmented-control { display: grid; gap: 7px; padding: 5px; border: 1px solid #2b3c59; border-radius: 11px; background: #0b1425; }
+.interaction-segments { grid-template-columns: repeat(3, 1fr); }
+.view-segments { grid-template-columns: repeat(2, 1fr); }
+.segmented-control button { min-width: 0; padding: 9px 10px; border: 1px solid transparent; background: transparent; color: #92a5c2; font-size: .82rem; }
+.segmented-control button:hover { border-color: #3c5577; color: #eaf1ff; background: #16243c; }
+.segmented-control button.active { border-color: #52cdb3; color: #d9fff6; background: #214641; box-shadow: inset 0 0 0 1px #6ee7c733; }
+.segmented-control button.active::before { content: "●"; margin-right: 6px; color: #6ee7c7; font-size: .65rem; vertical-align: 1px; }
 .flow-legend { display: flex; gap: 18px; flex-wrap: wrap; color: #8fa2bf; font-size: .78rem; }
 .flow-legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; background: var(--legend); }
 .flow-hint { position: absolute; left: 24px; bottom: 17px; max-width: 650px; margin: 0; padding: 5px 8px; border-radius: 5px; background: #091223bb; color: #afbed6; font-size: .75rem; }
-@media (max-width: 680px) { .flow-hint { position: static; margin: 8px; } }
+@media (max-width: 760px) { .flow-tool-panels { grid-template-columns: 1fr; } }
+@media (max-width: 680px) { .flow-hint { position: static; margin: 8px; }.flow-tool-heading { display: block; }.interaction-segments { grid-template-columns: repeat(2, 1fr); } }
