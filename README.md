@@ -17,6 +17,10 @@ Use `npm run build` to type-check and create the production site in `dist/`.
 
 Create a folder under `src/prototypes/`, implement its metadata and lifecycle, then register it in `src/app/prototype-registry.ts`. See [the prototype guide](docs/prototype-guide.md).
 
+## Daily topics
+
+[Daily Game Dev Topics](docs/daily-game-dev-topics.md) is the source of truth for introduced topics, Prototype progress, selection rules, and the future candidate pool.
+
 ## Structure
 
 - `src/app/`: router, shared types and registry
