@@ -17,9 +17,12 @@ export function buildFlowField(grid: FlowGrid, target: FlowCell) {
     frontier.sort((a, b) => b.integrationCost - a.integrationCost);
     const currentCell = frontier.pop()!;
     for (const neighbor of grid.neighbors(currentCell)) {
+      // movementCost represents the cost of entering a cell.
+      // During backward propagation, the predecessor reaches the current cell,
+      // so the edge must use currentCell.movementCost.
       const candidateCost =
         currentCell.integrationCost +
-        neighbor.travelCost * neighbor.cell.movementCost;
+        neighbor.travelCost * currentCell.movementCost;
       if (candidateCost >= neighbor.cell.integrationCost) continue;
       neighbor.cell.integrationCost = candidateCost;
       frontier.push(neighbor.cell);
