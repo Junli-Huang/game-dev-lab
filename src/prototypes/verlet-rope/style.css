@@ -1,0 +1,19 @@
+.rope-demo { position: relative; }
+.rope-demo canvas { touch-action: none; }
+.demo-stats { position: absolute; top: 24px; right: 24px; padding: 7px 10px; border-radius: 7px; background: #091223cc; color: #bffced; font: 700 .72rem ui-monospace, monospace; }
+.demo-hint { position: absolute; left: 28px; bottom: 18px; margin: 0; color: #afbed6; font-size: .8rem; }
+.rope-controls { align-items: flex-start; }
+.rope-controls label { flex: 1 1 180px; display: grid; grid-template-columns: auto auto; justify-content: space-between; }
+.rope-controls input { grid-column: 1 / -1; width: 100%; }
+.rope-controls small { grid-column: 1 / -1; color: #71829e; font-size: .7rem; }
+.debug-controls { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin: 0 0 52px; padding: 22px; background: #101a2c; border: 1px solid #273752; border-radius: 14px; }
+.debug-controls > div { margin-right: auto; }
+.debug-controls h2 { margin: 0; }
+.debug-controls label { color: #afbed6; white-space: nowrap; }
+.debug-controls input { accent-color: #6ee7c7; }
+@media (max-width: 680px) {
+  .demo-stats { position: static; margin: 8px; }
+  .demo-hint { display: none; }
+  .debug-controls { align-items: flex-start; flex-direction: column; }
+  .debug-controls > div { margin-right: 0; }
+}
