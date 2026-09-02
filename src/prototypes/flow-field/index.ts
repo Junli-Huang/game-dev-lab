@@ -11,12 +11,12 @@ export const flowField: PrototypeDefinition = {
       <main class="prototype-page shell">
         <a class="back-link" href="#/">← All prototypes</a>
         <header class="prototype-heading"><p class="eyebrow">Prototype 002 · AI</p><h1>Flow Field Pathfinding</h1><p>Build one shared navigation field, then let hundreds of agents query their local direction.</p></header>
-        <section class="demo-panel flow-demo"><canvas width="900" height="600"></canvas><div id="flow-stats" class="demo-stats"></div></section>
+        <section class="demo-panel flow-demo"><canvas width="900" height="600"></canvas><div id="flow-stats" class="demo-stats"></div><p class="flow-hint">Click to set the target, or move it with WASD / Arrow Keys. Choose Spawn Agents, then hold and drag to paint agents into the field.</p></section>
         <section class="controls flow-controls">
           <button id="pause">Pause</button><button id="reset" class="secondary">Reset</button>
           <label>Agents <output id="agents-value">100</output><input id="agents" type="range" min="10" max="500" step="10" value="100"></label>
           <label>Speed <output id="speed-value">70</output><input id="speed" type="range" min="20" max="150" step="5" value="70"></label>
-          <label>Interaction Mode<select id="interaction"><option value="target">Set Target</option><option value="obstacle">Paint Obstacle</option><option value="erase">Erase Obstacle</option><option value="spawn">Spawn 20 Agents</option></select></label>
+          <label>Interaction Mode<select id="interaction"><option value="target">Set Target</option><option value="obstacle">Paint Obstacle</option><option value="erase">Erase Obstacle</option><option value="spawn">Spawn Agents</option></select></label>
           <label>View Mode<select id="view"><option value="normal">Normal</option><option value="cost">Cost Field</option><option value="integration">Integration Field</option><option value="direction">Direction Field</option></select></label>
           <label class="check"><input id="show-agents" type="checkbox" checked> Show Agents</label>
         </section>

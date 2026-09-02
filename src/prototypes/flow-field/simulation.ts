@@ -20,6 +20,9 @@ export class FlowSimulation {
     for (let x = 7; x < 16; x += 1) if (x < 11 || x > 12) this.grid.cell(x, 14)!.walkable = false;
     this.target = this.grid.cell(29, 12)!;
     this.rebuildField();
+    // Reset means fresh simulation state, not merely restoring the desired
+    // array length. Keep the user's count setting but regenerate every agent.
+    this.agents = [];
     this.setAgentCount(this.settings.agentCount);
   }
 
@@ -33,6 +36,10 @@ export class FlowSimulation {
     this.target = cell;
     this.rebuildField();
     return true;
+  }
+
+  moveTarget(offsetX: number, offsetY: number) {
+    return this.setTarget(this.target.x + offsetX, this.target.y + offsetY);
   }
 
   setObstacle(x: number, y: number, blocked: boolean) {
@@ -49,13 +56,13 @@ export class FlowSimulation {
     this.agents.length = count;
   }
 
-  spawnAgentsAt(x: number, y: number, count = 20) {
+  spawnAgentAt(x: number, y: number) {
+    if (this.agents.length >= 500) return false;
     const cell = this.grid.cellAtPosition(x, y);
-    if (!cell?.walkable) return;
-    for (let index = 0; index < count && this.agents.length < 500; index += 1) {
-      this.agents.push({ x: x + (Math.random() - 0.5) * 16, y: y + (Math.random() - 0.5) * 16, radius: 3, phase: Math.random() * Math.PI * 2 });
-    }
+    if (!cell?.walkable) return false;
+    this.agents.push({ x, y, radius: 3, phase: Math.random() * Math.PI * 2 });
     this.settings.agentCount = this.agents.length;
+    return true;
   }
 
   step(deltaTime: number) {

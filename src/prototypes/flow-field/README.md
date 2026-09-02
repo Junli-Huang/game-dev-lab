@@ -24,7 +24,7 @@ V0.1 has no local avoidance, steering, or agent collision. Agents follow the dir
 - `prototype.ts`: fixed loop and pointer input
 
 ## Parameters to Play With
-Agent count, speed, target, obstacles, and Cost/Integration/Direction views.
+Agent count, speed, target, obstacles, and Cost/Integration/Direction views. Move the target one cell at a time with WASD or Arrow Keys. Spawn mode treats a held pointer as input intent and creates agents at 30 per second during fixed updates.
 
 ## Common Alternatives
 A*, Dijkstra, NavMesh, hierarchical A*, and steering.

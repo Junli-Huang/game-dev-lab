@@ -6,3 +6,5 @@
 .flow-controls select { padding: 8px; border: 1px solid #354766; border-radius: 7px; background: #111d34; color: #eaf1ff; }
 .flow-legend { display: flex; gap: 18px; flex-wrap: wrap; color: #8fa2bf; font-size: .78rem; }
 .flow-legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; background: var(--legend); }
+.flow-hint { position: absolute; left: 24px; bottom: 17px; max-width: 650px; margin: 0; padding: 5px 8px; border-radius: 5px; background: #091223bb; color: #afbed6; font-size: .75rem; }
+@media (max-width: 680px) { .flow-hint { position: static; margin: 8px; } }
