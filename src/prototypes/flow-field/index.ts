@@ -26,7 +26,7 @@ export const flowField: PrototypeDefinition = {
               <button data-value="obstacle" aria-pressed="false" title="Obstacle — Paint unwalkable cells">Obstacle</button>
               <button data-value="erase" aria-pressed="false" title="Erase — Remove obstacles while preserving underlying terrain cost">Erase</button>
               <button data-value="mud" aria-pressed="false" title="Mud — Paint movement cost 4">Mud</button>
-              <button data-value="terrain" aria-pressed="false" title="Normal — Restore movement cost 1">Normal</button>
+              <button data-value="normal" aria-pressed="false" title="Normal — Restore movement cost 1">Normal</button>
               <button data-value="spawn" aria-pressed="false" title="Spawn — Hold and drag to create agents at 30 per second">Spawn</button>
             </div>
           </div>
@@ -53,12 +53,14 @@ while (frontier.length) {
 }
 
 cell.direction = directionTo(
-  neighborWithLowestIntegration(cell)
+  neighborWithLowest(
+    edgeCost + integrationCost
+  )
 );
 
 agent.position +=
   field.cellAt(agent.position).direction * speed * dt;</code></pre></section>
-          <section><h2>Implementation</h2><p>Normal cells cost 1 to enter and Mud costs 4. The 36×24 grid uses eight neighbors: straight travel multiplies cost by 1 and diagonal travel by √2. Map or terrain edits rebuild the shared field instantly.</p></section>
+          <section><h2>Implementation</h2><p>The field is built backward from the Target so one expansion computes the remaining cost for every reachable cell; all agents can then share the result. Normal cells cost 1 to enter and Mud costs 4. The grid uses eight neighbors: straight travel multiplies cost by 1 and diagonal travel by √2.</p></section>
           <section><h2>Code Structure</h2><p><code>grid.ts</code> owns coordinates and neighbors; <code>flow-field.ts</code> builds integration and direction; <code>simulation.ts</code> moves agents and rebuilds fields; <code>renderer.ts</code> displays normal and debug views.</p></section>
           <section><h2>Parameters to Play With</h2><p>Paint Mud across a route and watch the whole crowd choose a longer but cheaper path; erase it to restore the direct route. Cost shows 1, 4, and ∞, while Integration exposes the accumulated result.</p></section>
           <section><h2>Cost Is Not Speed</h2><p>Mud affects pathfinding preference only. Agents do not read terrain and do not move slower on Mud—the penalty is already precomputed into the shared Flow Field.</p></section>

@@ -6,6 +6,8 @@ One target builds a shared navigation field. Hundreds of agents query only the d
 ## Core Idea
 Cost describes entering a cell, Integration describes total cost to the target, and Direction chooses the neighboring step with the lowest edge cost plus remaining integration cost.
 
+The Integration Field is built backward from the Target so one expansion computes the remaining cost for every reachable cell. All agents sharing that target can then reuse the same result.
+
 ## Minimal Algorithm
 Run Dijkstra backward from the target, derive a direction from each cell's cheapest neighbor, then move each agent along its local direction.
 

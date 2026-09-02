@@ -14,6 +14,8 @@ export function buildFlowField(grid: FlowGrid, target: FlowCell) {
   // Build backward from the shared target. One integration field can then
   // answer the next-step question for every agent on the map.
   while (frontier.length > 0) {
+    // This small teaching demo sorts an array for readability. Production
+    // Dijkstra implementations normally use a min-heap / priority queue.
     frontier.sort((a, b) => b.integrationCost - a.integrationCost);
     const currentCell = frontier.pop()!;
     for (const neighbor of grid.neighbors(currentCell)) {
