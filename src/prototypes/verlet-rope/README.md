@@ -12,6 +12,8 @@ Infer velocity from two positions, integrate acceleration, then repeatedly corre
 ## Implementation
 Rendering accumulates real time into fixed 1/120-second physics steps. Each step integrates free points, performs N constraint passes with positional ground projection, and applies ground damping once so iteration count does not alter friction.
 
+Pointer events only update a drag target. During simulation the dragged point becomes temporarily kinematic: it skips integration and constraints treat it like a pinned endpoint. On release, current and previous positions are aligned to encode zero release velocity.
+
 ## Code Structure
 - `verlet-point.ts`: point data
 - `constraint.ts`: distance correction

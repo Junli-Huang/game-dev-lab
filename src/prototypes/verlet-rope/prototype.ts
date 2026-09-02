@@ -6,7 +6,7 @@ export function mountVerletRope(canvas: HTMLCanvasElement, settings: RopeSetting
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas 2D is not supported by this browser.");
   const simulation = new RopeSimulation(canvas.width, canvas.height, settings);
-  let paused = false; let draggedPoint: VerletPoint | undefined; let animationId = 0;
+  let paused = false; let animationId = 0;
   const fixedDeltaTime = 1 / 120;
   const maximumFrameTime = 0.1;
   let accumulator = 0;
@@ -18,24 +18,22 @@ export function mountVerletRope(canvas: HTMLCanvasElement, settings: RopeSetting
   };
   canvas.onpointerdown = (event) => {
     const mouse = pointerPosition(event);
-    draggedPoint = simulation.points.reduce<VerletPoint | undefined>((nearest, point) => {
+    const draggedPoint = simulation.points.reduce<VerletPoint | undefined>((nearest, point) => {
       if (point.isPinned) return nearest;
       const distance = Math.hypot(point.position.x - mouse.x, point.position.y - mouse.y);
       const nearestDistance = nearest ? Math.hypot(nearest.position.x - mouse.x, nearest.position.y - mouse.y) : 22;
       return distance < nearestDistance ? point : nearest;
     }, undefined);
-    if (draggedPoint) canvas.setPointerCapture(event.pointerId);
+    if (draggedPoint) {
+      simulation.beginDrag(draggedPoint, mouse);
+      canvas.setPointerCapture(event.pointerId);
+    }
   };
   canvas.onpointermove = (event) => {
-    if (!draggedPoint) return;
-    const mouse = pointerPosition(event);
-    // Keep both positions together while dragging. If only the current
-    // position moved, Verlet would interpret the gap as a huge velocity and
-    // launch the point when the pointer is released.
-    draggedPoint.position.x = draggedPoint.previousPosition.x = mouse.x;
-    draggedPoint.position.y = draggedPoint.previousPosition.y = mouse.y;
+    if (!simulation.isDragging()) return;
+    simulation.updateDragTarget(pointerPosition(event));
   };
-  canvas.onpointerup = canvas.onpointercancel = () => { draggedPoint = undefined; };
+  canvas.onpointerup = canvas.onpointercancel = () => simulation.endDrag();
 
   const frame = (time: number) => {
     const frameTime = Math.min((time - previousTime) / 1000, maximumFrameTime);
@@ -52,6 +50,9 @@ export function mountVerletRope(canvas: HTMLCanvasElement, settings: RopeSetting
       // Discard time spent paused so Resume never tries to catch up.
       accumulator = 0;
     }
+    // A paused simulation still follows the input target for inspection, but
+    // pointer events themselves never mutate point positions.
+    simulation.synchronizeDraggedPoint();
     renderRope(context, simulation, debug);
     frames += 1;
     if (time - fpsTime >= 500) { fps = Math.round(frames * 1000 / (time - fpsTime)); frames = 0; fpsTime = time; }

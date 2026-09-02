@@ -22,7 +22,7 @@ export const verletRope: PrototypeDefinition = {
         </section>
         <section class="debug-controls"><div><p class="eyebrow">Teaching Debug View</p><h2>See the hidden state</h2></div><label class="check"><input id="show-points" type="checkbox" checked> Show Points</label><label class="check"><input id="show-constraints" type="checkbox"> Show Constraints</label><label class="check"><input id="show-previous" type="checkbox"> Show Previous Position</label><label class="check"><input id="show-velocity" type="checkbox"> Show Velocity</label></section>
         <article class="explanation">
-          <section><h2>What You Are Seeing</h2><p>This is not a chain of rigid bodies and joints. It is a list of points, each storing a current and previous position, plus fixed-distance rules between neighbors. The square point is pinned.</p></section>
+          <section><h2>What You Are Seeing</h2><p>This is not a chain of rigid bodies and joints. It is a list of points, each storing a current and previous position, plus fixed-distance rules between neighbors. The square point is static/pinned. A point held by the mouse temporarily becomes kinematic.</p></section>
           <section><h2>Core Idea</h2><p><code>position - previousPosition</code> is the displacement that encodes velocity in this fixed-step Verlet simulation. The rope itself emerges because the solver repeatedly forces every neighboring pair toward the same segment length.</p></section>
           <section><h2>Minimal Algorithm</h2><pre><code>const velocity = position - previousPosition;
 previousPosition = position;
@@ -30,12 +30,12 @@ position += velocity + gravity * dt * dt;
 
 const error = distance(a, b) - targetLength;
 correctPositions(a, b, error);</code></pre></section>
-          <section><h2>Implementation</h2><p>Real time is accumulated into fixed 1/120-second physics steps, so display refresh rate does not change the simulation. Each step integrates free points, solves constraints N times with floor projection, then applies ground damping once. More iterations improve solver convergence without changing friction.</p></section>
+          <section><h2>Implementation</h2><p>Real time is accumulated into fixed 1/120-second physics steps. Dynamic points are controlled by physics, the pinned point is static, and a dragged point is kinematic: input records a target while the simulation owns the actual write. Every solver pass treats that point as immovable, preventing the mouse and constraints from fighting.</p></section>
           <section><h2>Code Structure</h2><p><code>verlet-point.ts</code> stores state; <code>constraint.ts</code> corrects distances; <code>simulation.ts</code> coordinates integration and collision; <code>renderer.ts</code> reads state without changing it; <code>prototype.ts</code> handles interaction and lifecycle.</p></section>
           <section><h2>Parameters to Play With</h2><p>Compare Iterations 1 and 10 after pulling the middle sideways. The velocity arrows visualize <code>currentPosition - previousPosition</code>: fixed-step displacement rather than pixels per second. Increase the point count for smoother bending, or change segment length and reset.</p></section>
           <section><h2>Common Alternatives</h2><p>Rigid bodies with joints, spring–mass systems, general Position Based Dynamics and XPBD. Verlet plus distance constraints is useful, but it is not the only rope model.</p></section>
           <section><h2>Where Games Use This</h2><p>Ropes, chains, cables, hair, tentacles, cloth, spider webs and simple soft bodies all reuse variations of points connected by constraints.</p></section>
-          <section><h2>Next Experiments</h2><p>Pin multiple points, cut a constraint, collide with circles, attach weights, add wind, implement self-collision, expand into cloth, or compare with XPBD.</p></section>
+          <section><h2>Next Experiments</h2><p>Add throw-on-release by converting pointer motion into implicit Verlet velocity; then try multiple pins, cutting, circle collision, weights, wind, self-collision, cloth, or XPBD.</p></section>
         </article>
       </main>`;
     const settings: RopeSettings = { gravity: 900, pointCount: 20, segmentLength: 20, iterations: 5 };

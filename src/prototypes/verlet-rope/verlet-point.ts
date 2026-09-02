@@ -4,6 +4,7 @@ export interface VerletPoint {
   position: Vector2;
   previousPosition: Vector2;
   isPinned: boolean;
+  isDragged: boolean;
 }
 
 export function createPoint(x: number, y: number, isPinned = false): VerletPoint {
@@ -11,5 +12,6 @@ export function createPoint(x: number, y: number, isPinned = false): VerletPoint
     position: { x, y },
     previousPosition: { x, y },
     isPinned,
+    isDragged: false,
   };
 }
