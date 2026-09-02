@@ -29,16 +29,18 @@ export class FlowSimulation {
 
   setTarget(x: number, y: number) {
     const cell = this.grid.cell(x, y);
-    if (!cell?.walkable) return;
+    if (!cell?.walkable || cell === this.target) return false;
     this.target = cell;
     this.rebuildField();
+    return true;
   }
 
   setObstacle(x: number, y: number, blocked: boolean) {
     const cell = this.grid.cell(x, y);
-    if (!cell || cell === this.target || cell.walkable === !blocked) return;
+    if (!cell || cell === this.target || cell.walkable === !blocked) return false;
     cell.walkable = !blocked;
     this.rebuildField();
+    return true;
   }
 
   setAgentCount(count: number) {

@@ -19,9 +19,9 @@ export function mountFlowField(canvas: HTMLCanvasElement, settings: FlowSettings
   };
   const applyPointer = (event: PointerEvent) => {
     const pointer = pointerCell(event);
-    if (state.mode === "target") { simulation.setTarget(pointer.cellX, pointer.cellY); fieldBuilds += 1; }
-    if (state.mode === "obstacle") { simulation.setObstacle(pointer.cellX, pointer.cellY, true); fieldBuilds += 1; }
-    if (state.mode === "erase") { simulation.setObstacle(pointer.cellX, pointer.cellY, false); fieldBuilds += 1; }
+    if (state.mode === "target" && simulation.setTarget(pointer.cellX, pointer.cellY)) fieldBuilds += 1;
+    if (state.mode === "obstacle" && simulation.setObstacle(pointer.cellX, pointer.cellY, true)) fieldBuilds += 1;
+    if (state.mode === "erase" && simulation.setObstacle(pointer.cellX, pointer.cellY, false)) fieldBuilds += 1;
     if (state.mode === "spawn") { simulation.spawnAgentsAt(pointer.x, pointer.y); onAgentCount(simulation.agents.length); }
   };
   canvas.onpointerdown = (event) => { painting = true; canvas.setPointerCapture(event.pointerId); applyPointer(event); };

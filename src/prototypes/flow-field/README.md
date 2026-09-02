@@ -4,13 +4,15 @@
 One target builds a shared navigation field. Hundreds of agents query only the direction stored in their current grid cell.
 
 ## Core Idea
-Cost describes entering a cell, Integration describes total cost to the target, and Direction points toward the neighboring cell with the lowest integration value.
+Cost describes entering a cell, Integration describes total cost to the target, and Direction chooses the neighboring step with the lowest edge cost plus remaining integration cost.
 
 ## Minimal Algorithm
 Run Dijkstra backward from the target, derive a direction from each cell's cheapest neighbor, then move each agent along its local direction.
 
 ## Implementation
 A 36×24 grid uses eight neighbors, straight cost 1, diagonal cost √2, and no diagonal corner cutting. Editing obstacles or the target rebuilds the field. Agents use a fixed 60 Hz step.
+
+V0.1 has no local avoidance, steering, or agent collision. Agents follow the direction of their current cell and may overlap or behave poorly near cell boundaries.
 
 ## Code Structure
 - `cell.ts`: field state

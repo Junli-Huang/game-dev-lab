@@ -23,7 +23,7 @@ export const flowField: PrototypeDefinition = {
         <div class="flow-legend"><span style="--legend:#6ee7c7">Agents</span><span style="--legend:#ffbe55">Shared target</span><span style="--legend:#29344a">Obstacle</span><span style="--legend:#7cd7ff">Direction</span></div>
         <article class="explanation">
           <section><h2>What You Are Seeing</h2><p>Instead of Agent 1 → A*, Agent 2 → A*, and so on, the target builds one shared field. Every agent then asks only: “Which direction does my current cell point?”</p></section>
-          <section><h2>Core Idea</h2><p><strong>Cost</strong> says what a cell costs to enter. <strong>Integration</strong> says the total cost from that cell to the target. <strong>Direction</strong> points to the neighbor with the lowest integration value.</p></section>
+          <section><h2>Core Idea</h2><p><strong>Cost</strong> says what a cell costs to enter. <strong>Integration</strong> says the total cost from that cell to the target. <strong>Direction</strong> chooses the neighboring step with the lowest edge cost plus remaining integration cost.</p></section>
           <section><h2>Minimal Algorithm</h2><pre><code>integration[target] = 0;
 while (frontier.length) {
   const current = popLowest(frontier);
@@ -38,12 +38,13 @@ cell.direction = directionTo(
 
 agent.position +=
   field.cellAt(agent.position).direction * speed * dt;</code></pre></section>
-          <section><h2>Implementation</h2><p>The 36×24 grid uses eight neighbors. Straight movement costs 1 and diagonal movement costs √2; corner cutting through walls is forbidden. Map edits rebuild the whole field instantly. Agents move on a fixed 60 Hz simulation step and rendering is read-only.</p></section>
+          <section><h2>Implementation</h2><p>The 36×24 grid uses eight neighbors. Straight movement costs 1 and diagonal movement costs √2; corner cutting through walls is forbidden. Direction selects the step minimizing <code>edgeCost + neighbor.integrationCost</code>. Map edits rebuild the field instantly. Agents move on a fixed 60 Hz step.</p></section>
           <section><h2>Code Structure</h2><p><code>grid.ts</code> owns coordinates and neighbors; <code>flow-field.ts</code> builds integration and direction; <code>simulation.ts</code> moves agents and rebuilds fields; <code>renderer.ts</code> displays normal and debug views.</p></section>
           <section><h2>Parameters to Play With</h2><p>Set a new target and watch every agent turn. Paint a wall across the current route, inspect Integration costs, then switch to Direction arrows. Raise the count to 500 to see one field remain shared.</p></section>
           <section><h2>When It Fits</h2><p>Flow fields are strong when many units share a goal. If every unit has a completely different target, repeatedly rebuilding separate full-map fields may cost more than individual path searches.</p></section>
           <section><h2>Common Alternatives</h2><p>A* finds a focused single path; Dijkstra explores by cost; NavMesh handles continuous walkable space; hierarchical A* reduces large-map search; steering handles local movement rather than global routing.</p></section>
           <section><h2>Where Games Use This</h2><p>RTS armies, tower-defense enemies, zombie hordes, large crowds and mass enemy AI.</p></section>
+          <section><h2>Known Limitation</h2><p>V0.1 agents follow cell directions without local collision, steering or avoidance. They may overlap and can behave poorly near cell boundaries; those are deliberately separate crowd-movement problems.</p></section>
           <section><h2>Next Experiments</h2><p>Terrain weights, dynamic obstacles, multiple targets, separation, local avoidance, field blending, hierarchical fields and incremental rebuilds.</p></section>
         </article>
       </main>`;

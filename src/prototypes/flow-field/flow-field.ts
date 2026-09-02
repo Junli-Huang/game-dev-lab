@@ -29,8 +29,17 @@ export function buildFlowField(grid: FlowGrid, target: FlowCell) {
   for (const cell of grid.cells) {
     if (!cell.walkable || cell === target || !Number.isFinite(cell.integrationCost)) continue;
     let bestCell = cell;
+    let bestTotalCost = Infinity;
     for (const neighbor of grid.neighbors(cell)) {
-      if (neighbor.cell.integrationCost < bestCell.integrationCost) bestCell = neighbor.cell;
+      // Direction must include the cost of taking this edge, not merely choose
+      // the neighbor whose remaining integration value is smallest.
+      const totalCost =
+        neighbor.travelCost * neighbor.cell.movementCost +
+        neighbor.cell.integrationCost;
+      if (totalCost < bestTotalCost) {
+        bestTotalCost = totalCost;
+        bestCell = neighbor.cell;
+      }
     }
     if (bestCell === cell) continue;
     const deltaX = bestCell.x - cell.x;
