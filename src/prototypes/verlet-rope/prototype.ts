@@ -7,6 +7,9 @@ export function mountVerletRope(canvas: HTMLCanvasElement, settings: RopeSetting
   if (!context) throw new Error("Canvas 2D is not supported by this browser.");
   const simulation = new RopeSimulation(canvas.width, canvas.height, settings);
   let paused = false; let draggedPoint: VerletPoint | undefined; let animationId = 0;
+  const fixedDeltaTime = 1 / 120;
+  const maximumFrameTime = 0.1;
+  let accumulator = 0;
   let previousTime = performance.now(); let fpsTime = previousTime; let frames = 0; let fps = 60;
 
   const pointerPosition = (event: PointerEvent) => {
@@ -26,18 +29,33 @@ export function mountVerletRope(canvas: HTMLCanvasElement, settings: RopeSetting
   canvas.onpointermove = (event) => {
     if (!draggedPoint) return;
     const mouse = pointerPosition(event);
+    // Keep both positions together while dragging. If only the current
+    // position moved, Verlet would interpret the gap as a huge velocity and
+    // launch the point when the pointer is released.
     draggedPoint.position.x = draggedPoint.previousPosition.x = mouse.x;
     draggedPoint.position.y = draggedPoint.previousPosition.y = mouse.y;
   };
   canvas.onpointerup = canvas.onpointercancel = () => { draggedPoint = undefined; };
 
   const frame = (time: number) => {
-    const deltaTime = Math.min((time - previousTime) / 1000, 1 / 30); previousTime = time;
-    if (!paused) simulation.step(deltaTime);
+    const frameTime = Math.min((time - previousTime) / 1000, maximumFrameTime);
+    previousTime = time;
+    if (!paused) {
+      accumulator += frameTime;
+      // Physics advances in identical steps on 60, 120 and 144 Hz displays.
+      // Rendering remains tied to requestAnimationFrame.
+      while (accumulator >= fixedDeltaTime) {
+        simulation.step(fixedDeltaTime);
+        accumulator -= fixedDeltaTime;
+      }
+    } else {
+      // Discard time spent paused so Resume never tries to catch up.
+      accumulator = 0;
+    }
     renderRope(context, simulation, debug);
     frames += 1;
     if (time - fpsTime >= 500) { fps = Math.round(frames * 1000 / (time - fpsTime)); frames = 0; fpsTime = time; }
-    stats.textContent = `FPS ${fps}  ·  Points ${simulation.points.length}  ·  Constraints ${simulation.constraints.length}  ·  Iterations ${settings.iterations}`;
+    stats.textContent = `FPS ${fps}  ·  Physics 120 Hz  ·  Points ${simulation.points.length}  ·  Constraints ${simulation.constraints.length}  ·  Iterations ${settings.iterations}`;
     animationId = requestAnimationFrame(frame);
   };
   animationId = requestAnimationFrame(frame);

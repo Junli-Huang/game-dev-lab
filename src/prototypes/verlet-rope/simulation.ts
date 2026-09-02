@@ -30,8 +30,9 @@ export class RopeSimulation {
     // the pass makes the full chain converge toward all target lengths.
     for (let pass = 0; pass < this.settings.iterations; pass += 1) {
       this.constraints.forEach(solveDistanceConstraint);
-      this.resolveGroundCollision();
+      this.projectPointsAboveGround();
     }
+    this.applyGroundDamping();
   }
 
   private integratePoints(deltaTime: number) {
@@ -49,12 +50,19 @@ export class RopeSimulation {
     }
   }
 
-  private resolveGroundCollision() {
+  private projectPointsAboveGround() {
     for (const point of this.points) {
       if (point.isPinned || point.position.y <= this.groundY) continue;
       point.position.y = this.groundY;
-      // Moving the previous position toward the current position removes some
-      // tangential energy and prevents endless skating along the ground.
+    }
+  }
+
+  private applyGroundDamping() {
+    for (const point of this.points) {
+      if (point.isPinned || point.position.y < this.groundY - 0.001) continue;
+      // This velocity response runs once per simulation step, outside the
+      // constraint loop. Iterations therefore change solver accuracy without
+      // secretly changing the amount of ground friction.
       point.previousPosition.x += (point.position.x - point.previousPosition.x) * 0.08;
     }
   }

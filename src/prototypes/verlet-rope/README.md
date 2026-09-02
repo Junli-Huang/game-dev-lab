@@ -10,7 +10,7 @@ A chain of position-based points connected by fixed-distance constraints, not ri
 Infer velocity from two positions, integrate acceleration, then repeatedly correct every segment toward its target length.
 
 ## Implementation
-Each frame integrates free points, performs N constraint passes, resolves ground collision, and renders both the rope and optional debug state.
+Rendering accumulates real time into fixed 1/120-second physics steps. Each step integrates free points, performs N constraint passes with positional ground projection, and applies ground damping once so iteration count does not alter friction.
 
 ## Code Structure
 - `verlet-point.ts`: point data
