@@ -1,0 +1,83 @@
+import type { FlowAgent } from "./agent";
+import { buildFlowField } from "./flow-field";
+import { FlowGrid } from "./grid";
+
+export interface FlowSettings { agentCount: number; agentSpeed: number }
+
+export class FlowSimulation {
+  readonly grid = new FlowGrid(36, 24, 25);
+  agents: FlowAgent[] = [];
+  target = this.grid.cell(29, 12)!;
+
+  constructor(public settings: FlowSettings) {
+    this.reset();
+  }
+
+  reset() {
+    this.grid.cells.forEach((cell) => { cell.walkable = true; cell.movementCost = 1; });
+    // Two offset walls make the initial field visibly bend without forming a maze.
+    for (let y = 3; y < 17; y += 1) if (y < 9 || y > 11) this.grid.cell(18, y)!.walkable = false;
+    for (let x = 7; x < 16; x += 1) if (x < 11 || x > 12) this.grid.cell(x, 14)!.walkable = false;
+    this.target = this.grid.cell(29, 12)!;
+    this.rebuildField();
+    this.setAgentCount(this.settings.agentCount);
+  }
+
+  rebuildField() {
+    buildFlowField(this.grid, this.target);
+  }
+
+  setTarget(x: number, y: number) {
+    const cell = this.grid.cell(x, y);
+    if (!cell?.walkable) return;
+    this.target = cell;
+    this.rebuildField();
+  }
+
+  setObstacle(x: number, y: number, blocked: boolean) {
+    const cell = this.grid.cell(x, y);
+    if (!cell || cell === this.target || cell.walkable === !blocked) return;
+    cell.walkable = !blocked;
+    this.rebuildField();
+  }
+
+  setAgentCount(count: number) {
+    this.settings.agentCount = count;
+    while (this.agents.length < count) this.agents.push(this.createAgent());
+    this.agents.length = count;
+  }
+
+  spawnAgentsAt(x: number, y: number, count = 20) {
+    const cell = this.grid.cellAtPosition(x, y);
+    if (!cell?.walkable) return;
+    for (let index = 0; index < count && this.agents.length < 500; index += 1) {
+      this.agents.push({ x: x + (Math.random() - 0.5) * 16, y: y + (Math.random() - 0.5) * 16, radius: 3, phase: Math.random() * Math.PI * 2 });
+    }
+    this.settings.agentCount = this.agents.length;
+  }
+
+  step(deltaTime: number) {
+    const targetX = (this.target.x + 0.5) * this.grid.cellSize;
+    const targetY = (this.target.y + 0.5) * this.grid.cellSize;
+    for (const agent of this.agents) {
+      if (Math.hypot(agent.x - targetX, agent.y - targetY) < 7) continue;
+      const cell = this.grid.cellAtPosition(agent.x, agent.y);
+      if (!cell?.walkable || !Number.isFinite(cell.integrationCost)) continue;
+      // Every agent performs the same O(1) local lookup. No agent runs A*.
+      agent.x += cell.direction.x * this.settings.agentSpeed * deltaTime;
+      agent.y += cell.direction.y * this.settings.agentSpeed * deltaTime;
+    }
+  }
+
+  private createAgent(): FlowAgent {
+    for (let attempt = 0; attempt < 50; attempt += 1) {
+      const x = 2 + Math.floor(Math.random() * 10);
+      const y = 2 + Math.floor(Math.random() * 20);
+      const cell = this.grid.cell(x, y)!;
+      if (cell.walkable && Number.isFinite(cell.integrationCost)) {
+        return { x: (x + 0.5) * 25 + (Math.random() - 0.5) * 12, y: (y + 0.5) * 25 + (Math.random() - 0.5) * 12, radius: 3, phase: Math.random() * Math.PI * 2 };
+      }
+    }
+    return { x: 40, y: 40, radius: 3, phase: 0 };
+  }
+}

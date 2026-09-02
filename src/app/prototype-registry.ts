@@ -1,8 +1,9 @@
 import type { PrototypeDefinition, PrototypeMetadata } from "./types";
 import { bouncingBall } from "../prototypes/bouncing-ball";
 import { verletRope } from "../prototypes/verlet-rope";
+import { flowField } from "../prototypes/flow-field";
 
-export const prototypes: PrototypeDefinition[] = [verletRope, bouncingBall];
+export const prototypes: PrototypeDefinition[] = [flowField, verletRope, bouncingBall];
 
 export function findPrototype(id: string) { return prototypes.find((item) => item.metadata.id === id); }
 export function searchPrototypes(query: string, category = "All"): PrototypeMetadata[] {

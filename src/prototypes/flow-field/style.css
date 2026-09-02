@@ -1,0 +1,8 @@
+.flow-demo { position: relative; }
+.flow-demo canvas { touch-action: none; image-rendering: auto; }
+.flow-controls { align-items: flex-start; }
+.flow-controls label { display: grid; grid-template-columns: auto auto; flex: 1 1 170px; justify-content: space-between; }
+.flow-controls input, .flow-controls select { grid-column: 1 / -1; width: 100%; }
+.flow-controls select { padding: 8px; border: 1px solid #354766; border-radius: 7px; background: #111d34; color: #eaf1ff; }
+.flow-legend { display: flex; gap: 18px; flex-wrap: wrap; color: #8fa2bf; font-size: .78rem; }
+.flow-legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; background: var(--legend); }
