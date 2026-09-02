@@ -4,7 +4,7 @@
 A chain of position-based points connected by fixed-distance constraints, not rigid bodies and joints.
 
 ## Core Idea
-`position - previousPosition` represents implicit velocity. Repeated correction of neighboring distances makes many simple rules behave like a rope.
+`position - previousPosition` is the displacement that encodes velocity in the fixed-step simulation. Repeated correction of neighboring distances makes many simple rules behave like a rope.
 
 ## Minimal Algorithm
 Infer velocity from two positions, integrate acceleration, then repeatedly correct every segment toward its target length.

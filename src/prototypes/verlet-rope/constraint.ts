@@ -20,8 +20,8 @@ export function solveDistanceConstraint(constraint: DistanceConstraint) {
   const correctionX = deltaX * correctionRatio;
   const correctionY = deltaY * correctionRatio;
 
-  // Two free points share the correction. If one is pinned, the free point must
-  // take all of it or the segment would remain stretched away from the anchor.
+  // Two free points share the correction. If one is controlled (pinned or
+  // dragged), the free point must take all of it to satisfy the constraint.
   if (!pointAIsControlled && !pointBIsControlled) {
     pointA.position.x += correctionX * 0.5;
     pointA.position.y += correctionY * 0.5;

@@ -65,7 +65,7 @@ function visualPreviousPosition(point: RopeSimulation["points"][number]) {
 }
 
 function drawPreviousPositionConnectors(context: CanvasRenderingContext2D, simulation: RopeSimulation) {
-  simulation.points.forEach((point, index) => {
+  simulation.points.forEach((point) => {
     if (point.isPinned) return;
     const previous = visualPreviousPosition(point);
     context.strokeStyle = "#c18cff";
