@@ -11,6 +11,9 @@
 .debug-controls h2 { margin: 0; }
 .debug-controls label { color: #afbed6; white-space: nowrap; }
 .debug-controls input { accent-color: #6ee7c7; }
+.debug-note { flex: 1 0 100%; margin: 4px 0 0; padding-top: 14px; border-top: 1px solid #273752; color: #8fa2bf; font-size: .78rem; }
+.debug-note strong:first-child { color: #c18cff; }
+.debug-note strong:nth-of-type(2) { color: #ff718a; }
 @media (max-width: 680px) {
   .demo-stats { position: static; margin: 8px; }
   .demo-hint { display: none; }
