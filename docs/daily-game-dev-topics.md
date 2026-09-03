@@ -570,6 +570,88 @@ No Spatial Partitioning
 
 ---
 
+## 005 — Constraint Generation Lab
+
+```text
+Topic: 程序化生成为什么不等于随机摆放？
+—— 从 Tile Candidates、Collapse 与 Constraint Propagation 理解 WFC Core
+Domain:
+- Procedural Generation
+- Constraint Satisfaction
+- World Generation
+
+Status: Prototyped
+
+Prototype:
+src/prototypes/constraint-generation
+
+Core Concepts:
+- Tile Candidate Sets
+- Directional Compatibility Rules
+- Candidate-count Entropy
+- Minimum Entropy Selection
+- Collapse
+- FIFO Constraint Propagation
+- Contradiction
+```
+
+核心链路：
+
+```text
+Possibilities
+↓
+Minimum-Entropy Collapse
+↓
+Constraint Propagation
+↓
+Reduced Possibilities
+↓
+Repeat
+```
+
+核心教学点：
+
+> 未 Collapse 的 Cell 不是空格，而是仍有多个合法状态。
+
+以及：
+
+```text
+Collapse
+→ 做出一个局部决定
+
+Propagation
+→ 让这个决定持续约束邻居
+→ 由局部规则形成整体结构
+```
+
+已完成：
+
+```text
+12 × 8 Grid
+Water / Sand / Grass / Forest
+Explicit Up / Right / Down / Left Rules
+Collapse Step
+Propagation Step
+Auto Run / Pause
+Seed Replay / Random Seed
+Entropy / Candidate Debug
+Propagation Queue
+Current / Changed / Queued Highlights
+Contradiction State
+```
+
+已明确限制：
+
+```text
+No Backtracking
+No Weighted Randomness / Shannon Entropy
+No Biomes / Large Maps
+No Overlapping WFC / Pattern Learning
+No Rule Editor / 3D
+```
+
+---
+
 # Future Candidate Pool
 
 以下只是候选池，不代表开发顺序。
@@ -612,7 +694,6 @@ Domain Warping
 ## Procedural Generation
 
 ```text
-Wave Function Collapse
 Marching Squares
 Cellular Automata
 Poisson Disk Sampling
