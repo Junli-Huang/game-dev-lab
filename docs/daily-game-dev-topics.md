@@ -484,6 +484,89 @@ smoothMin(a, b)
 
 ---
 
+## 004 — Crowd Steering Lab
+
+```text
+Topic: 为什么大量单位朝同一目标移动时不会全部堆在一起？
+—— 从 Seek + Separation 理解 Local Steering
+Domain:
+- AI
+- Simulation
+- Crowd Movement
+
+Status: Prototyped
+
+Prototype:
+src/prototypes/crowd-steering
+
+Core Concepts:
+- Desired Velocity
+- Seek Steering
+- Separation Steering
+- Neighbor Radius
+- Weighted Steering
+- Max Force / Max Speed
+- Fixed Timestep
+- O(N²) Neighbor Query
+```
+
+核心链路：
+
+```text
+Target
+↓
+Seek
++
+Separation from Nearby Agents
+↓
+Weighted Sum
+↓
+Clamp Force / Speed
+↓
+Movement
+```
+
+核心教学点：
+
+```text
+Pathfinding
+→ Where should I go?
+
+Steering
+→ How should I move right now?
+```
+
+以及：
+
+```text
+Separation
+≠ Collision Resolution
+```
+
+已完成：
+
+```text
+Separation ON / OFF
+Seek Only / Balanced / Strong Separation / Crowded Presets
+Velocity / Seek / Separation / Final Steering Debug
+Selected Agent Inspector
+Neighbor Radius and Neighbor Highlight
+Fixed 60 Hz Simulation
+```
+
+已明确限制：
+
+```text
+No Arrival / Cohesion / Alignment
+No Obstacle Avoidance
+No Agent Collision
+No RVO / ORCA
+No Flow Field Integration
+No Spatial Partitioning
+```
+
+---
+
 # Future Candidate Pool
 
 以下只是候选池，不代表开发顺序。
@@ -501,7 +584,6 @@ Procedural Foot Placement
 
 ```text
 Boids
-Steering Behaviors
 Local Avoidance
 ORCA / RVO
 Influence Maps

@@ -1,0 +1,51 @@
+.steering-demo { position: relative; }
+.steering-demo canvas { touch-action: none; }
+.steering-hint { position: absolute; left: 24px; bottom: 17px; margin: 0; padding: 5px 8px; border-radius: 5px; background: #091223bb; color: #afbed6; font-size: .76rem; }
+.steering-controls { align-items: flex-start; }
+.steering-controls label { display: grid; grid-template-columns: auto auto; flex: 1 1 145px; justify-content: space-between; }
+.steering-controls input { grid-column: 1 / -1; width: 100%; }
+.steering-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: -28px 0 18px; }
+.steering-tool-group { padding: 18px; border: 1px solid #273752; border-radius: 14px; background: #101a2c; }
+.tool-heading { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin-bottom: 13px; }
+.tool-heading h2 { margin: 0; font-size: 1.15rem; }
+.tool-heading span { color: #71829e; font-size: .7rem; text-align: right; }
+.steering-tools .segmented-control { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; padding: 5px; border: 1px solid #2b3c59; border-radius: 11px; background: #0b1425; }
+.steering-tools .segmented-control button,
+.preset-grid button { min-width: 0; padding: 9px 10px; border: 1px solid transparent; background: transparent; color: #92a5c2; font-size: .8rem; }
+.steering-tools .segmented-control button:hover,
+.preset-grid button:hover { border-color: #3c5577; color: #eaf1ff; background: #16243c; }
+.steering-tools .segmented-control button.active,
+.preset-grid button.active { border-color: #52cdb3; color: #d9fff6; background: #214641; box-shadow: inset 0 0 0 1px #6ee7c733; }
+.preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; padding: 5px; border: 1px solid #2b3c59; border-radius: 11px; background: #0b1425; }
+.steering-debug { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; padding: 20px; border: 1px solid #273752; border-radius: 14px; background: #101a2c; }
+.steering-debug > div:first-child { margin-right: auto; }
+.steering-debug h2 { margin: 0; font-size: 1.15rem; }
+.steering-debug label { color: #afbed6; font-size: .8rem; white-space: nowrap; }
+.steering-debug input { accent-color: #6ee7c7; }
+.vector-legend { display: flex; flex: 1 0 100%; gap: 18px; padding-top: 12px; border-top: 1px solid #273752; color: #8fa2bf; font-size: .72rem; }
+.vector-legend span::before { content: "→"; margin-right: 5px; color: var(--vector); font-weight: 900; }
+.inspector-panel { display: grid; grid-template-columns: 260px 1fr; gap: 22px; margin-bottom: 18px; padding: 20px; border: 1px solid #273752; border-radius: 14px; background: #101a2c; }
+.inspector-panel h2 { margin: 0; font-size: 1.15rem; }
+.inspector-panel p:last-child { margin: 8px 0 0; color: #8495b0; font-size: .75rem; }
+.agent-inspector { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.agent-inspector > div { display: grid; padding: 9px 10px; border-radius: 8px; background: #0b1425; }
+.agent-inspector span { color: #71829e; font-size: .65rem; text-transform: uppercase; }
+.agent-inspector strong { color: #bffced; font: 700 .78rem ui-monospace, monospace; }
+.recommended-steering { display: grid; grid-template-columns: 260px 1fr; gap: 22px; margin-bottom: 48px; padding: 22px; border: 1px solid #38536f; border-radius: 14px; background: linear-gradient(145deg, #12233a, #101a2c); }
+.recommended-steering h2 { margin: 0; font-size: 1.2rem; }
+.recommended-steering ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; padding-left: 22px; color: #afbed6; font-size: .78rem; }
+.recommended-steering strong { color: #eaf1ff; }
+
+@media (max-width: 760px) {
+  .steering-tools { grid-template-columns: 1fr; }
+  .inspector-panel,
+  .recommended-steering { grid-template-columns: 1fr; }
+  .agent-inspector { grid-template-columns: repeat(2, 1fr); }
+  .recommended-steering ol { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 680px) {
+  .steering-hint { position: static; margin: 8px; }
+  .tool-heading { align-items: flex-start; flex-direction: column; }
+  .tool-heading span { text-align: left; }
+}

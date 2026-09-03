@@ -3,8 +3,9 @@ import { bouncingBall } from "../prototypes/bouncing-ball";
 import { verletRope } from "../prototypes/verlet-rope";
 import { flowField } from "../prototypes/flow-field";
 import { sdfPlayground } from "../prototypes/sdf-playground";
+import { crowdSteering } from "../prototypes/crowd-steering";
 
-export const prototypes: PrototypeDefinition[] = [sdfPlayground, flowField, verletRope, bouncingBall];
+export const prototypes: PrototypeDefinition[] = [crowdSteering, sdfPlayground, flowField, verletRope, bouncingBall];
 
 export function findPrototype(id: string) { return prototypes.find((item) => item.metadata.id === id); }
 export function searchPrototypes(query: string, category = "All"): PrototypeMetadata[] {
