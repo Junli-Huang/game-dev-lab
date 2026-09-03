@@ -74,7 +74,7 @@ export function mountCrowdSteering(
       (sum, agent) => sum + agent.debug.neighborCount,
       0,
     ) / Math.max(simulation.agents.length, 1);
-    stats.textContent = `FPS ${fps} · Fixed 60 Hz · ${t("common.agents")} ${simulation.agents.length} · ${t("stats.separation")} ${settings.separationEnabled ? "ON" : "OFF"} · ${t("stats.avgNeighbors")} ${averageNeighbors.toFixed(1)}`;
+    stats.textContent = `FPS ${fps} · Fixed 60 Hz · ${t("common.agents")} ${simulation.agents.length} · ${t("stats.separation")} ${settings.separationEnabled ? t("common.on") : t("common.off")} · ${t("stats.avgNeighbors")} ${averageNeighbors.toFixed(1)}`;
     renderInspector(inspector, simulation);
     animationId = requestAnimationFrame(frame);
   };
@@ -107,11 +107,11 @@ function renderInspector(inspector: HTMLElement, simulation: CrowdSteeringSimula
     return;
   }
   inspector.innerHTML = `
-    <div><span>Agent</span><strong>#${agent.id}</strong></div>
-    <div><span>Position</span><strong>${agent.position.x.toFixed(1)}, ${agent.position.y.toFixed(1)}</strong></div>
-    <div><span>Velocity</span><strong>${magnitude(agent.velocity).toFixed(1)}</strong></div>
-    <div><span>Neighbors</span><strong>${agent.debug.neighborCount}</strong></div>
+    <div><span>${t("inspector.agent")}</span><strong>#${agent.id}</strong></div>
+    <div><span>${t("inspector.position")}</span><strong>${agent.position.x.toFixed(1)}, ${agent.position.y.toFixed(1)}</strong></div>
+    <div><span>${t("inspector.velocity")}</span><strong>${magnitude(agent.velocity).toFixed(1)}</strong></div>
+    <div><span>${t("inspector.neighbors")}</span><strong>${agent.debug.neighborCount}</strong></div>
     <div><span>Seek</span><strong>${magnitude(agent.debug.seek).toFixed(1)}</strong></div>
     <div><span>Separation</span><strong>${magnitude(agent.debug.separation).toFixed(1)}</strong></div>
-    <div><span>Final Steering</span><strong>${magnitude(agent.debug.finalSteering).toFixed(1)}</strong></div>`;
+    <div><span>${t("inspector.finalSteering")}</span><strong>${magnitude(agent.debug.finalSteering).toFixed(1)}</strong></div>`;
 }

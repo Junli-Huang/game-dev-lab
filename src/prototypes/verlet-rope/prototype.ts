@@ -88,12 +88,13 @@ export function mountVerletRope(
       frames = 0;
       fpsTime = time;
     }
-    const phase = paused ? stepState.phase[0].toUpperCase() + stepState.phase.slice(1) : "Realtime";
+    const phaseKeys = { ready: "rope.ready", predicted: "rope.predictedPhase", solving: "rope.solving", complete: "rope.completePhase" } as const;
+    const phase = paused ? t(phaseKeys[stepState.phase]) : t("rope.realtime");
     stats.textContent = `FPS ${fps}  ·  Physics 120 Hz  ·  ${t("stats.phase")} ${phase}  ·  ${t("stats.solver")} ${stepState.solverIteration}/${settings.iterations}  ·  ${t("stats.avgError")} ${error.average.toFixed(2)} px  ·  ${t("stats.maxError")} ${error.maximum.toFixed(2)} px`;
     phaseBadge.hidden = !(paused && stepState.phase === "predicted");
     history.innerHTML = stepState.history.length
-      ? stepState.history.map((sample) => `<span><b>${sample.label}</b> ${sample.average.toFixed(2)}</span>`).join("")
-      : `<span class="empty-history">Pause and use Solver Step to record convergence.</span>`;
+      ? stepState.history.map((sample) => `<span><b>${sample.label === "Prediction" ? t("rope.prediction") : sample.label.replace("Pass", t("rope.pass"))}</b> ${sample.average.toFixed(2)}</span>`).join("")
+      : `<span class="empty-history">${t("rope.emptyHistory")}</span>`;
     animationId = requestAnimationFrame(frame);
   };
   animationId = requestAnimationFrame(frame);

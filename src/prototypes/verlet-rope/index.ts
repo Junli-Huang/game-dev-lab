@@ -14,7 +14,7 @@ export const verletRope: PrototypeDefinition = {
     container.innerHTML = `
       <main class="prototype-page shell">
         <a class="back-link" href="#/">← All prototypes</a>
-        <header class="prototype-heading"><p class="eyebrow">Prototype 001 · ${metadata.category} · V0.2.2</p><h1>${metadata.title}</h1><p>${metadata.description}<br>Use a rope to separate position prediction from position-based constraint correction.</p></header>
+        <header class="prototype-heading"><p class="eyebrow">Prototype 001 · Physics · V0.2.2</p><h1>${metadata.title}</h1><p>${metadata.description}<br>Use a rope to separate position prediction from position-based constraint correction.</p></header>
         <section class="demo-panel rope-demo" aria-label="Interactive position-based rope demo"><canvas width="900" height="560"></canvas><div id="prediction-badge" class="prediction-badge" hidden><strong>Predicted Positions</strong><span>Constraints NOT solved yet</span></div><div id="rope-stats" class="demo-stats"></div><p class="demo-hint">Drag the rope, then Pause. Use Solver Step to watch constraints converge one pass at a time.</p></section>
 
         <section class="controls rope-controls" aria-label="Simulation controls">

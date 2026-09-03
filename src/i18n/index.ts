@@ -1,15 +1,18 @@
 import { en, type MessageKey } from "./en";
 import { zhCN } from "./zh-CN";
 import type { PrototypeMetadata } from "../app/types";
+import { contentMessages } from "./content";
 
 export type Language = "zh-CN" | "en";
 const storageKey = "game-dev-lab.language";
 const listeners = new Set<() => void>();
-const textBindings = new WeakMap<Text, MessageKey>();
-const attributeBindings = new WeakMap<Element, Map<string, MessageKey>>();
-const localizedKey = new Map<string, MessageKey>();
+type AnyMessageKey = MessageKey | keyof typeof contentMessages;
+const textBindings = new WeakMap<Text, AnyMessageKey>();
+const attributeBindings = new WeakMap<Element, Map<string, AnyMessageKey>>();
+const localizedKey = new Map<string, AnyMessageKey>();
 for (const [key, value] of Object.entries(en)) localizedKey.set(value, key as MessageKey);
 for (const [key, value] of Object.entries(zhCN)) localizedKey.set(value, key as MessageKey);
+for (const [key, value] of Object.entries(contentMessages)) { localizedKey.set(value.en, key as keyof typeof contentMessages); localizedKey.set(value.zh, key as keyof typeof contentMessages); }
 let language = detectLanguage();
 
 export function getLanguage() { return language; }
@@ -51,7 +54,7 @@ export function refreshTranslations(root: ParentNode) {
       if (key) {
         const leading = node.data.match(/^\s*/)?.[0] ?? "";
         const trailing = node.data.match(/\s*$/)?.[0] ?? "";
-        node.data = leading + t(key) + trailing;
+        node.data = leading + translateAny(key) + trailing;
       }
     }
     node = walker.nextNode() as Text | null;
@@ -65,9 +68,13 @@ export function refreshTranslations(root: ParentNode) {
         key = localizedKey.get(element.getAttribute(attribute) ?? "");
         if (key) { bindings ??= new Map(); bindings.set(attribute, key); attributeBindings.set(element, bindings); }
       }
-      if (key) element.setAttribute(attribute, t(key));
+      if (key) element.setAttribute(attribute, translateAny(key));
     }
   }
+}
+function translateAny(key: AnyMessageKey) {
+  if (key in contentMessages) return contentMessages[key as keyof typeof contentMessages][language === "zh-CN" ? "zh" : "en"];
+  return t(key as MessageKey);
 }
 export function mountLanguageSwitcher() {
   document.documentElement.lang = language;

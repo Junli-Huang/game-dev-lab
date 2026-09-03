@@ -62,26 +62,29 @@ export function mountSdfPlayground(canvas: HTMLCanvasElement, state: SdfState, s
 
   const frame = () => {
     renderer.render(state);
-    status.textContent = `Application ${state.application} · Operation ${state.operation} · View ${state.view}`;
+    const applicationKeys = { playground: "sdf.playground", "ui-outline": "sdf.uiOutline", "spell-area": "sdf.spell", metaball: "sdf.metaball", collision: "sdf.collision" } as const;
+    const operationKeys = { circle: "sdf.circle", box: "sdf.box", union: "sdf.union", intersection: "sdf.intersection", subtract: "sdf.subtract", "smooth-union": "sdf.smoothUnion" } as const;
+    const viewKeys = { normal: "flow.normal", distance: "sdf.distance", sign: "sdf.sign", contour: "sdf.contour" } as const;
+    status.textContent = `${t("sdf.appLabel")} ${t(applicationKeys[state.application])} · ${t("sdf.operationLabel")} ${t(operationKeys[state.operation])} · ${t("sdf.viewLabel")} ${t(viewKeys[state.view])}`;
     if (state.application === "spell-area" || state.application === "collision") {
       // The same signed distance used for rendering can answer gameplay
       // questions such as "is the player inside this area?"
       const distance = evaluateApplicationSdf(state.playerPosition, state);
       if (state.application === "spell-area") {
-        const sign = Math.abs(distance) < 0.003 ? "Boundary" : distance < 0 ? "Inside Spell" : "Outside Spell";
+        const sign = Math.abs(distance) < 0.003 ? t("sdf.boundary") : distance < 0 ? t("sdf.insideSpell") : t("sdf.outsideSpell");
         const influence = Math.max(0, Math.min(1, -distance / Math.max(state.circleRadius, 0.001)));
-        probe.innerHTML = `<strong>Spell Area Query</strong><span>distance ${distance.toFixed(4)} · ${sign}</span><span>center influence ${(influence * 100).toFixed(0)}%</span>`;
+        probe.innerHTML = `<strong>${t("sdf.spellQuery")}</strong><span>distance ${distance.toFixed(4)} · ${sign}</span><span>${t("sdf.centerInfluence")} ${(influence * 100).toFixed(0)}%</span>`;
       } else {
         const relation = distance < 0
-          ? `Inside · penetration ${Math.abs(distance).toFixed(4)}`
-          : `Outside · surface distance ${distance.toFixed(4)}`;
-        probe.innerHTML = `<strong>Collision Distance Query</strong><span>signed distance ${distance.toFixed(4)}</span><span>${relation}</span>`;
+          ? `${t("sdf.inside")} · ${t("sdf.penetration")} ${Math.abs(distance).toFixed(4)}`
+          : `${t("sdf.outside")} · ${t("sdf.surfaceDistance")} ${distance.toFixed(4)}`;
+        probe.innerHTML = `<strong>${t("sdf.collisionQuery")}</strong><span>${t("sdf.signedDistance")} ${distance.toFixed(4)}</span><span>${relation}</span>`;
       }
     } else if (pointer) {
       const distance = evaluateApplicationSdf(pointer, state);
-      const sign = Math.abs(distance) < 0.003 ? "Boundary ≈ 0" : distance < 0 ? "Inside · negative" : "Outside · positive";
-      probe.innerHTML = `<strong>SDF Probe</strong><span>x ${pointer.x.toFixed(3)} · y ${pointer.y.toFixed(3)}</span><span>distance ${distance.toFixed(4)} · ${sign}</span>`;
-    } else probe.innerHTML = `<strong>SDF Probe</strong><span>${t("sdf.movePointer")}</span>`;
+      const sign = Math.abs(distance) < 0.003 ? `${t("sdf.boundary")} ≈ 0` : distance < 0 ? `${t("sdf.inside")} · negative` : `${t("sdf.outside")} · positive`;
+      probe.innerHTML = `<strong>${t("sdf.probe")}</strong><span>x ${pointer.x.toFixed(3)} · y ${pointer.y.toFixed(3)}</span><span>distance ${distance.toFixed(4)} · ${sign}</span>`;
+    } else probe.innerHTML = `<strong>${t("sdf.probe")}</strong><span>${t("sdf.movePointer")}</span>`;
     animationId = requestAnimationFrame(frame);
   };
   animationId = requestAnimationFrame(frame);
