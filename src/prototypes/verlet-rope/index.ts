@@ -5,53 +5,112 @@ import { mountVerletRope } from "./prototype";
 import type { DebugOptions } from "./renderer";
 import type { RopeSettings } from "./simulation";
 
+const iterationChoices = [1, 2, 4, 8, 16, 32];
+
 export const verletRope: PrototypeDefinition = {
   metadata,
   render(container) {
     container.innerHTML = `
       <main class="prototype-page shell">
         <a class="back-link" href="#/">← All prototypes</a>
-        <header class="prototype-heading"><p class="eyebrow">Prototype 001 · ${metadata.category}</p><h1>${metadata.title}</h1><p>${metadata.description}<br>通过位置积分与距离约束，模拟自然摆动的绳子。</p></header>
-        <section class="demo-panel rope-demo" aria-label="Interactive Verlet rope demo"><canvas width="900" height="560"></canvas><div id="rope-stats" class="demo-stats"></div><p class="demo-hint">Drag any round rope point, then release it.</p></section>
+        <header class="prototype-heading"><p class="eyebrow">Prototype 001 · ${metadata.category} · V0.2</p><h1>${metadata.title}</h1><p>${metadata.description}<br>Use a rope to separate position prediction from position-based constraint correction.</p></header>
+        <section class="demo-panel rope-demo" aria-label="Interactive position-based rope demo"><canvas width="900" height="560"></canvas><div id="rope-stats" class="demo-stats"></div><p class="demo-hint">Drag a round particle sideways, then compare solver iterations.</p></section>
+
         <section class="controls rope-controls" aria-label="Simulation controls">
-          <button id="pause">Pause</button><button id="reset" class="secondary">Reset Rope</button>
-          <label>Gravity <output id="gravity-value">900</output><input id="gravity" type="range" min="0" max="1500" step="50" value="900"><small>Downward acceleration</small></label>
+          <button id="pause">Pause</button><button id="step" class="secondary" disabled>Frame Step</button><button id="reset" class="secondary">Reset Rope</button>
+          <label>Gravity <output id="gravity-value">900</output><input id="gravity" type="range" min="0" max="2400" step="100" value="900"><small>Downward acceleration</small></label>
           <label>Points <output id="points-value">20</output><input id="points" type="range" min="5" max="50" value="20"><small>Rebuilds on release</small></label>
           <label>Segment <output id="segment-value">20</output><input id="segment" type="range" min="8" max="30" value="20"><small>Rest length in pixels</small></label>
-          <label>Iterations <output id="iterations-value">5</output><input id="iterations" type="range" min="1" max="15" value="5"><small>Accuracy versus work</small></label>
         </section>
-        <section class="debug-controls"><div><p class="eyebrow">Teaching Debug View</p><h2>See the hidden state</h2></div><label class="check"><input id="show-points" type="checkbox" checked> Show Points</label><label class="check"><input id="show-constraints" type="checkbox"> Show Constraints</label><label class="check"><input id="show-previous" type="checkbox"> Show Previous Position</label><label class="check"><input id="show-velocity" type="checkbox"> Show Velocity</label><p class="debug-note"><strong>○ Previous:</strong> displacement is visualized at 5× scale so it remains readable at 120 Hz physics. <strong>→ Velocity:</strong> arrows enlarge <code>currentPosition - previousPosition</code> and are capped at 50px. These overlays never change the simulation.</p></section>
-        <article class="explanation">
-          <section><h2>What You Are Seeing</h2><p>This is not a chain of rigid bodies and joints. It is a list of points, each storing a current and previous position, plus fixed-distance rules between neighbors. The square point is static/pinned. A point held by the mouse temporarily becomes kinematic.</p></section>
-          <section><h2>Core Idea</h2><p><code>position - previousPosition</code> is the displacement that encodes velocity in this fixed-step Verlet simulation. The rope itself emerges because the solver repeatedly forces every neighboring pair toward the same segment length.</p></section>
-          <section><h2>Minimal Algorithm</h2><pre><code>const velocity = position - previousPosition;
-previousPosition = position;
-position += velocity + gravity * dt * dt;
 
-const error = distance(a, b) - targetLength;
-correctPositions(a, b, error);</code></pre></section>
-          <section><h2>Implementation</h2><p>Real time is accumulated into fixed 1/120-second physics steps. Dynamic points are controlled by physics, the pinned point is static, and a dragged point is kinematic: input records a target while the simulation owns the actual write. Every solver pass treats that point as immovable, preventing the mouse and constraints from fighting.</p></section>
-          <section><h2>Code Structure</h2><p><code>verlet-point.ts</code> stores state; <code>constraint.ts</code> corrects distances; <code>simulation.ts</code> coordinates integration and collision; <code>renderer.ts</code> reads state without changing it; <code>prototype.ts</code> handles interaction and lifecycle.</p></section>
-          <section><h2>Parameters to Play With</h2><p>Compare Iterations 1 and 10 after pulling the middle sideways. The velocity arrows visualize <code>currentPosition - previousPosition</code>: fixed-step displacement rather than pixels per second. Increase the point count for smoother bending, or change segment length and reset.</p></section>
-          <section><h2>Common Alternatives</h2><p>Rigid bodies with joints, spring–mass systems, general Position Based Dynamics and XPBD. Verlet plus distance constraints is useful, but it is not the only rope model.</p></section>
-          <section><h2>Where Games Use This</h2><p>Ropes, chains, cables, hair, tentacles, cloth, spider webs and simple soft bodies all reuse variations of points connected by constraints.</p></section>
-          <section><h2>Next Experiments</h2><p>Add throw-on-release by converting pointer motion into implicit Verlet velocity; then try multiple pins, cutting, circle collision, weights, wind, self-collision, cloth, or XPBD.</p></section>
+        <section class="solver-panel" aria-label="Constraint solver experiment">
+          <div class="solver-heading"><div><p class="eyebrow">PBD Constraint Experiment</p><h2>Constraint Iterations</h2></div><p>Repeat the same positional correction within one physics step. More passes usually reduce remaining distance error; they are not a material stiffness value.</p></div>
+          <div id="iteration-buttons" class="segmented-control iteration-segments" role="group" aria-label="Constraint iterations">
+            ${iterationChoices.map((value) => `<button type="button" data-iterations="${value}">${value}</button>`).join("")}
+          </div>
+          <div class="preset-row" role="group" aria-label="Experiment presets">
+            <button type="button" class="secondary" data-preset="loose">Loose Solver</button>
+            <button type="button" class="secondary" data-preset="normal">Normal Rope</button>
+            <button type="button" class="secondary" data-preset="tight">Tight Solver</button>
+            <button type="button" class="secondary" data-preset="heavy">Heavy Gravity</button>
+          </div>
+        </section>
+
+        <section class="debug-controls"><div><p class="eyebrow">Teaching Debug View</p><h2>See the hidden state</h2></div><label class="check"><input id="show-points" type="checkbox" checked> Show Particles</label><label class="check"><input id="show-constraints" type="checkbox"> Show Constraints</label><label class="check"><input id="show-previous" type="checkbox"> Show Previous Position</label><label class="check"><input id="show-velocity" type="checkbox"> Show Velocity</label><label class="check"><input id="show-error" type="checkbox"> Show Constraint Error</label><p class="debug-note"><strong>○ Previous:</strong> shown at 5× scale for readability at 120 Hz. <strong>→ Velocity:</strong> enlarged fixed-step displacement, capped at 50px. <strong>Δ Error:</strong> remaining absolute difference between current and rest length. Debug overlays never modify simulation state.</p></section>
+
+        <article class="explanation">
+          <section class="pipeline-card"><h2>Simulation Pipeline</h2><div class="pipeline"><span>Verlet Integration<br><small>predict positions</small></span><b>↓</b><span>PBD Constraints<br><small>correct positions</small></span><b>↓</b><span>Repeat N Passes<br><small>reduce error</small></span><b>↓</b><span>Render<br><small>read-only</small></span></div></section>
+          <section><h2>What Each Part Solves</h2><p>Verlet predicts where particles move from their fixed-step displacement and acceleration. The PBD-style solver then directly corrects predicted positions that violate distance, pin, kinematic-drag, or collision constraints. They are cooperating stages, not competing rope algorithms.</p></section>
+          <section><h2>Verlet Integration</h2><pre><code>motion = position - previousPosition
+previousPosition = position
+position += motion + acceleration * dt²</code></pre><p><code>position - previousPosition</code> is the displacement that encodes velocity in this fixed-step simulation.</p></section>
+          <section><h2>Position-Based Dynamics</h2><pre><code>predict positions
+apply constraints
+correct positions
+repeat</code></pre><p>PBD does not first require an exact constraint force. It directly moves positions toward a legal configuration.</p></section>
+          <section><h2>Distance Constraint</h2><p>For neighbors A and B, the solver compares their current distance with rest length L. Two dynamic particles share the correction; a particle paired with a pinned or dragged point takes the whole correction.</p><pre><code>error = distance(A, B) - L
+correctPositions(A, B, error)</code></pre></section>
+          <section><h2>Why Iterations Matter</h2><p>Correcting one segment can disturb its neighbor. Repeating the pass lets errors propagate through the chain and converge. In classic PBD, iteration count affects how completely constraints are satisfied, which can look like a change in stiffness: <code>Iterations ↑ → Error ↓</code>.</p></section>
+          <section><h2>Run the Experiment</h2><p>Choose Loose Solver, pull the middle particle sideways, and watch Avg/Max Error. Pause and use Frame Step to inspect one complete 1/120-second simulation step. Then switch to Tight Solver and compare the measured error rather than judging only by feel.</p></section>
+          <section><h2>Code Structure</h2><p><code>verlet-point.ts</code> stores particle state; <code>constraint.ts</code> applies distance correction; <code>simulation.ts</code> owns integration, constraint passes, collision and error measurement; <code>renderer.ts</code> draws read-only debug overlays; <code>prototype.ts</code> owns input and the fixed loop.</p></section>
+          <section><h2>Next Experiments</h2><p>V0.3 can add a bending constraint for hair, tails, tentacles and vines. V0.4 can compare classic PBD with XPBD, focusing on compliance and why classic PBD behavior depends on iterations and timestep.</p></section>
         </article>
       </main>`;
-    const settings: RopeSettings = { gravity: 900, pointCount: 20, segmentLength: 20, iterations: 5 };
-    const debug: DebugOptions = { showPoints: true, showConstraints: false, showPrevious: false, showVelocity: false };
+
+    const settings: RopeSettings = { gravity: 900, pointCount: 20, segmentLength: 20, iterations: 8 };
+    const debug: DebugOptions = { showPoints: true, showConstraints: false, showPrevious: false, showVelocity: false, showConstraintError: false };
     const simulation = mountVerletRope(container.querySelector("canvas")!, settings, debug, container.querySelector("#rope-stats")!);
+
     const bindRange = (id: string, key: keyof RopeSettings, rebuild = false) => {
       const input = container.querySelector<HTMLInputElement>(`#${id}`)!;
       const output = container.querySelector<HTMLOutputElement>(`#${id}-value`)!;
       input.oninput = () => { settings[key] = Number(input.value); output.value = input.value; };
       if (rebuild) input.onchange = simulation.rebuild;
     };
-    bindRange("gravity", "gravity"); bindRange("points", "pointCount", true); bindRange("segment", "segmentLength", true); bindRange("iterations", "iterations");
-    const bindDebug = (id: string, key: keyof DebugOptions) => { container.querySelector<HTMLInputElement>(`#${id}`)!.onchange = (event) => { debug[key] = (event.target as HTMLInputElement).checked; }; };
-    bindDebug("show-points", "showPoints"); bindDebug("show-constraints", "showConstraints"); bindDebug("show-previous", "showPrevious"); bindDebug("show-velocity", "showVelocity");
+    bindRange("gravity", "gravity");
+    bindRange("points", "pointCount", true);
+    bindRange("segment", "segmentLength", true);
+
+    const iterationButtons = [...container.querySelectorAll<HTMLButtonElement>("[data-iterations]")];
+    const selectIterations = (iterations: number) => {
+      settings.iterations = iterations;
+      iterationButtons.forEach((button) => button.classList.toggle("active", Number(button.dataset.iterations) === iterations));
+    };
+    iterationButtons.forEach((button) => { button.onclick = () => selectIterations(Number(button.dataset.iterations)); });
+    selectIterations(settings.iterations);
+
+    const gravityInput = container.querySelector<HTMLInputElement>("#gravity")!;
+    const gravityOutput = container.querySelector<HTMLOutputElement>("#gravity-value")!;
+    const applyPreset = (iterations: number, gravity: number) => {
+      selectIterations(iterations);
+      settings.gravity = gravity;
+      gravityInput.value = String(gravity);
+      gravityOutput.value = String(gravity);
+      simulation.rebuild();
+    };
+    const presets: Record<string, [number, number]> = { loose: [1, 900], normal: [8, 900], tight: [32, 900], heavy: [4, 2400] };
+    container.querySelectorAll<HTMLButtonElement>("[data-preset]").forEach((button) => {
+      button.onclick = () => applyPreset(...presets[button.dataset.preset!]);
+    });
+
+    const bindDebug = (id: string, key: keyof DebugOptions) => {
+      container.querySelector<HTMLInputElement>(`#${id}`)!.onchange = (event) => { debug[key] = (event.target as HTMLInputElement).checked; };
+    };
+    bindDebug("show-points", "showPoints");
+    bindDebug("show-constraints", "showConstraints");
+    bindDebug("show-previous", "showPrevious");
+    bindDebug("show-velocity", "showVelocity");
+    bindDebug("show-error", "showConstraintError");
+
     const pause = container.querySelector<HTMLButtonElement>("#pause")!;
-    pause.onclick = () => { simulation.togglePause(); pause.textContent = simulation.isPaused() ? "Resume" : "Pause"; };
+    const step = container.querySelector<HTMLButtonElement>("#step")!;
+    pause.onclick = () => {
+      simulation.togglePause();
+      const paused = simulation.isPaused();
+      pause.textContent = paused ? "Resume" : "Pause";
+      step.disabled = !paused;
+    };
+    step.onclick = () => simulation.stepFrame();
     container.querySelector<HTMLButtonElement>("#reset")!.onclick = simulation.rebuild;
     return simulation.destroy;
   },

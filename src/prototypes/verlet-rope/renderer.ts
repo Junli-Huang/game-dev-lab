@@ -1,6 +1,12 @@
 import type { RopeSimulation } from "./simulation";
 
-export interface DebugOptions { showPoints: boolean; showConstraints: boolean; showPrevious: boolean; showVelocity: boolean }
+export interface DebugOptions {
+  showPoints: boolean;
+  showConstraints: boolean;
+  showPrevious: boolean;
+  showVelocity: boolean;
+  showConstraintError: boolean;
+}
 
 const previousVisualizationScale = 5;
 const velocityVisualizationScale = 5;
@@ -22,6 +28,10 @@ export function renderRope(context: CanvasRenderingContext2D, simulation: RopeSi
     context.lineTo(constraint.pointB.position.x, constraint.pointB.position.y);
   });
   context.stroke();
+
+  if (debug.showConstraintError) {
+    drawConstraintErrors(context, simulation);
+  }
 
   // Debug overlays are drawn in semantic layers. This keeps the hollow
   // previous marker, solid current point and direction arrow distinguishable
@@ -53,6 +63,30 @@ export function renderRope(context: CanvasRenderingContext2D, simulation: RopeSi
   if (debug.showConstraints) {
     drawConstraintLabels(context, simulation);
   }
+
+  if (debug.showConstraintError) {
+    drawConstraintErrorLabels(context, simulation);
+  }
+}
+
+function constraintError(constraint: RopeSimulation["constraints"][number]) {
+  return Math.abs(Math.hypot(
+    constraint.pointB.position.x - constraint.pointA.position.x,
+    constraint.pointB.position.y - constraint.pointA.position.y,
+  ) - constraint.targetLength);
+}
+
+function drawConstraintErrors(context: CanvasRenderingContext2D, simulation: RopeSimulation) {
+  simulation.constraints.forEach((constraint) => {
+    const error = constraintError(constraint);
+    const intensity = Math.min(error / Math.max(constraint.targetLength * 0.2, 1), 1);
+    context.strokeStyle = `hsl(${42 - intensity * 42} 92% ${62 - intensity * 8}%)`;
+    context.lineWidth = 3;
+    context.beginPath();
+    context.moveTo(constraint.pointA.position.x, constraint.pointA.position.y);
+    context.lineTo(constraint.pointB.position.x, constraint.pointB.position.y);
+    context.stroke();
+  });
 }
 
 function visualPreviousPosition(point: RopeSimulation["points"][number]) {
@@ -113,6 +147,17 @@ function drawConstraintLabels(context: CanvasRenderingContext2D, simulation: Rop
       const length = Math.hypot(point.position.x - a.position.x, point.position.y - a.position.y);
       context.fillStyle = "#d8e2f2"; context.font = "10px system-ui"; context.fillText(`${index}: ${length.toFixed(1)}`, point.position.x + 7, point.position.y);
     }
+  });
+}
+
+function drawConstraintErrorLabels(context: CanvasRenderingContext2D, simulation: RopeSimulation) {
+  simulation.constraints.forEach((constraint, index) => {
+    if (index % 3 !== 1) return;
+    const x = (constraint.pointA.position.x + constraint.pointB.position.x) * 0.5;
+    const y = (constraint.pointA.position.y + constraint.pointB.position.y) * 0.5;
+    context.fillStyle = "#ffd384";
+    context.font = "700 10px ui-monospace, monospace";
+    context.fillText(`Δ ${constraintError(constraint).toFixed(2)}px`, x + 6, y - 5);
   });
 }
 

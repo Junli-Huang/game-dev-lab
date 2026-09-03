@@ -55,9 +55,10 @@ export function mountVerletRope(canvas: HTMLCanvasElement, settings: RopeSetting
       simulation.synchronizeDraggedPoint();
     }
     renderRope(context, simulation, debug);
+    const error = simulation.getConstraintErrorStats();
     frames += 1;
     if (time - fpsTime >= 500) { fps = Math.round(frames * 1000 / (time - fpsTime)); frames = 0; fpsTime = time; }
-    stats.textContent = `FPS ${fps}  ·  Physics 120 Hz  ·  Points ${simulation.points.length}  ·  Constraints ${simulation.constraints.length}  ·  Iterations ${settings.iterations}`;
+    stats.textContent = `FPS ${fps}  ·  Physics 120 Hz  ·  Iterations ${settings.iterations}  ·  Avg Error ${error.average.toFixed(2)} px  ·  Max Error ${error.maximum.toFixed(2)} px`;
     animationId = requestAnimationFrame(frame);
   };
   animationId = requestAnimationFrame(frame);
@@ -65,6 +66,11 @@ export function mountVerletRope(canvas: HTMLCanvasElement, settings: RopeSetting
     rebuild: () => simulation.rebuild(),
     togglePause: () => (paused = !paused),
     isPaused: () => paused,
+    stepFrame: () => {
+      if (!paused) return false;
+      simulation.step(fixedDeltaTime);
+      return true;
+    },
     destroy: () => { cancelAnimationFrame(animationId); canvas.onpointerdown = canvas.onpointermove = canvas.onpointerup = canvas.onpointercancel = null; },
   };
 }

@@ -3,6 +3,11 @@ import { createPoint, type Vector2, type VerletPoint } from "./verlet-point";
 
 export interface RopeSettings { gravity: number; pointCount: number; segmentLength: number; iterations: number }
 
+export interface ConstraintErrorStats {
+  average: number;
+  maximum: number;
+}
+
 export class RopeSimulation {
   points: VerletPoint[] = [];
   constraints: DistanceConstraint[] = [];
@@ -41,6 +46,22 @@ export class RopeSimulation {
       this.projectPointsAboveGround();
     }
     this.applyGroundDamping();
+  }
+
+  getConstraintErrorStats(): ConstraintErrorStats {
+    if (this.constraints.length === 0) return { average: 0, maximum: 0 };
+    let total = 0;
+    let maximum = 0;
+    for (const constraint of this.constraints) {
+      const distance = Math.hypot(
+        constraint.pointB.position.x - constraint.pointA.position.x,
+        constraint.pointB.position.y - constraint.pointA.position.y,
+      );
+      const error = Math.abs(distance - constraint.targetLength);
+      total += error;
+      maximum = Math.max(maximum, error);
+    }
+    return { average: total / this.constraints.length, maximum };
   }
 
   private integratePoints(deltaTime: number) {

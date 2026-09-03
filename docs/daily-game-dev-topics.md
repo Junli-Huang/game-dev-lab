@@ -207,20 +207,26 @@ Debug View
 ## 001 — Verlet Rope
 
 ```text
-Topic: Verlet Integration / Rope Simulation
+Topic: 为什么 Verlet Rope 的硬度会受到 Constraint Iterations 影响？
+—— 从 Verlet Integration 理解 Position-Based Dynamics
 Domain:
 - Physics
 - Simulation
 
 Status: Polished
 
+V0.2 Expansion:
+Existing Prototype / Completed
+
 Prototype:
 src/prototypes/verlet-rope
 
 Core Concepts:
 - Verlet Integration
+- Position-Based Dynamics
 - Position Constraints
 - Constraint Iterations
+- Constraint Error / Solver Convergence
 - Fixed Timestep
 - Kinematic / Controlled Point
 - Ground Collision
@@ -239,7 +245,9 @@ position - previousPosition
 ```text
 Integrate
 ↓
-Constraint Solve
+Predicted Positions
+↓
+PBD-style Constraint Solve × N
 ↓
 Collision
 ↓
@@ -265,9 +273,13 @@ Renderer
 Previous Position Debug
 Velocity Debug
 Constraint Debug
+Average / Max Constraint Error
+Constraint Error Overlay
 Dragging
 Ground Collision
 Pause
+Frame Step
+Loose / Normal / Tight / Heavy Gravity Presets
 Parameter Controls
 ```
 
@@ -518,3 +530,90 @@ Cellular Automata
 Poisson Disk Sampling
 Noise / FBM
 Constraint-based Generation
+```
+
+## Physics / Simulation
+
+```text
+Position Based Dynamics
+XPBD
+Soft Body
+Fluid Approximation
+Chain / Cloth
+Destructible Terrain
+```
+
+## World / Geometry
+
+```text
+Signed Distance Fields
+Marching Squares
+Spatial Hash
+Quadtree
+BVH
+Voronoi / Delaunay
+```
+
+## Networking
+
+```text
+Client Prediction
+Server Reconciliation
+Interpolation Buffer
+Lag Compensation
+Rollback
+Lockstep
+Snapshot Interpolation
+```
+
+候选池应持续扩充，不需要一次整理完整。
+
+---
+
+# Topic Selection Rules
+
+每日选择新 Topic 时，应优先：
+
+```text
+1. 尚未 Introduced 的内容
+
+2. 与最近几次不同领域
+
+3. 游戏中有明显可观察现象
+
+4. 背后存在值得掌握的通用技术
+
+5. 能扩大 Known Unknowns
+
+6. 必要时优先选择适合做 Prototype 的内容
+```
+
+避免：
+
+```text
+连续几天都是 Shader
+连续几天都是 Pathfinding
+连续几天都是某个具体引擎 API
+```
+
+---
+
+# Repository as Source of Truth
+
+关于每日技巧：
+
+```text
+长期规则 / 用户偏好
+→ Conversation Memory
+
+具体 Topic 进度
+Prototype 状态
+已经介绍过什么
+→ game-dev-lab
+```
+
+`game-dev-lab` 应作为：
+
+> Daily Game Dev Topic Progress 的事实来源（Source of Truth）。
+
+后续选择每日技巧时，应参考本文件，避免重复已经介绍过的主题。
