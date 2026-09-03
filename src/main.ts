@@ -1,8 +1,10 @@
 import "./style.css";
+import "./i18n/style.css";
 import { createRouter } from "./app/router";
 import { prototypes, searchPrototypes } from "./app/prototype-registry";
 import { prototypeCard } from "./components/prototype-card";
 import type { PrototypeCategory } from "./app/types";
+import { mountLanguageSwitcher, refreshTranslations, subscribeLanguageChange, t } from "./i18n";
 
 const app = document.querySelector<HTMLElement>("#app")!;
 const categories: (PrototypeCategory | "All")[] = ["All", "World & Simulation", "Rendering", "Physics", "AI", "Gameplay", "Procedural Generation", "Networking", "Audio", "Tools", "Other"];
@@ -17,7 +19,8 @@ function renderHome() {
     const results = searchPrototypes(input.value, category);
     cards.innerHTML = results.map(prototypeCard).join("");
     empty.hidden = results.length > 0;
-    app.querySelector("#count")!.textContent = `${results.length} experiment${results.length === 1 ? "" : "s"}`;
+    app.querySelector("#count")!.textContent = results.length === 1 ? t("home.countOne") : t("home.countMany", { count: results.length });
+    refreshTranslations(app);
   };
   input.addEventListener("input", update);
   app.querySelector("#categories")!.addEventListener("click", (event) => {
@@ -35,3 +38,8 @@ function renderHome() {
 }
 
 createRouter(app, renderHome);
+mountLanguageSwitcher();
+subscribeLanguageChange(() => {
+  const heading = app.querySelector("h1")?.textContent;
+  document.title = heading ? `${heading} · Game Dev Lab` : "Game Dev Lab";
+});

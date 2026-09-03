@@ -4,6 +4,7 @@ import { mountCrowdSteering } from "./prototype";
 import type { SteeringDebugOptions } from "./renderer";
 import type { SteeringSettings } from "./simulation";
 import "./style.css";
+import { t } from "../../i18n";
 
 const presets: Record<string, Partial<SteeringSettings>> = {
   "seek-only": { agentCount: 40, seekWeight: 1, separationWeight: 0, neighborRadius: 40, separationEnabled: false },
@@ -203,7 +204,7 @@ Render → read-only state</code></pre></section>
 
     const pause = container.querySelector<HTMLButtonElement>("#pause")!;
     pause.onclick = () => {
-      pause.textContent = mounted.togglePause() ? "Resume" : "Pause";
+      pause.textContent = mounted.togglePause() ? t("common.resume") : t("common.pause");
     };
     container.querySelector<HTMLButtonElement>("#reset")!.onclick = mounted.reset;
     return mounted.destroy;

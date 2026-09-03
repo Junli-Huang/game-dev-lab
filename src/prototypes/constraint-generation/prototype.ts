@@ -1,5 +1,6 @@
 import { renderConstraintGeneration, type GenerationDebugOptions } from "./renderer";
 import { ConstraintGenerationSimulation } from "./simulation";
+import { t } from "../../i18n";
 
 export function mountConstraintGeneration(
   canvas: HTMLCanvasElement,
@@ -20,10 +21,10 @@ export function mountConstraintGeneration(
 
   const updatePanels = () => {
     const queue = simulation.propagationQueue;
-    stats.textContent = `Phase ${formatPhase(simulation.phase)} · Collapsed ${simulation.collapsedCellCount}/${simulation.grid.cells.length} · Queue ${queue.length} · Collapse Decisions ${simulation.collapseCount} · Propagation Steps ${simulation.propagationCount}`;
+    stats.textContent = `${t("stats.phase")} ${formatPhase(simulation.phase)} · ${t("stats.collapsed")} ${simulation.collapsedCellCount}/${simulation.grid.cells.length} · ${t("stats.queue")} ${queue.length} · ${t("stats.collapseDecisions")} ${simulation.collapseCount} · ${t("stats.propagationSteps")} ${simulation.propagationCount}`;
     queuePanel.innerHTML = queue.length
       ? queue.slice(0, 12).map((cell, index) => `<span class="${index === 0 ? "next" : ""}">(${cell.x}, ${cell.y})</span>`).join("") + (queue.length > 12 ? `<span>+${queue.length - 12}</span>` : "")
-      : "<span class=\"queue-empty\">Queue empty — the next generation action is Collapse.</span>";
+      : `<span class="queue-empty">${t("constraint.queueEmpty")}</span>`;
     phaseMessage.className = `generation-phase ${simulation.phase}`;
     phaseMessage.textContent = phaseText(simulation);
   };
@@ -68,21 +69,21 @@ export function mountConstraintGeneration(
 }
 
 function formatPhase(phase: ConstraintGenerationSimulation["phase"]) {
-  return phase[0].toUpperCase() + phase.slice(1);
+  return t(`phase.${phase}` as "phase.ready");
 }
 
 function phaseText(simulation: ConstraintGenerationSimulation) {
   if (simulation.phase === "contradiction") {
-    return "Generation Failed — a Cell has no valid candidates. V0.1 does not backtrack; restart and try again.";
+    return t("constraint.phaseFailed");
   }
   if (simulation.phase === "complete") {
-    return "Generation Complete — every Cell has exactly one remaining Tile.";
+    return t("constraint.phaseComplete");
   }
   if (simulation.phase === "collapsed") {
-    return "Collapsed one minimum-entropy Cell. Constraints have NOT propagated yet.";
+    return t("constraint.phaseCollapsed");
   }
   if (simulation.phase === "propagating") {
-    return "Propagating — one changed domain can enqueue more neighbors.";
+    return t("constraint.phasePropagating");
   }
-  return "Ready — the queue is empty, so the next algorithm action is a minimum-entropy Collapse.";
+  return t("constraint.phaseReady");
 }

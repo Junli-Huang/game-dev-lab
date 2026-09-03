@@ -5,6 +5,7 @@ import { mountConstraintGeneration } from "./prototype";
 import type { GenerationDebugOptions } from "./renderer";
 import { directions, tiles, tileTypes } from "./tiles";
 import "./style.css";
+import { refreshTranslations, t } from "../../i18n";
 
 export const constraintGeneration: PrototypeDefinition = {
   metadata,
@@ -50,7 +51,7 @@ export const constraintGeneration: PrototypeDefinition = {
       collapseButton.disabled = terminal || mounted.simulation.propagationQueue.length > 0 || mounted.isAutoRunning();
       propagationButton.disabled = terminal || mounted.simulation.propagationQueue.length === 0 || mounted.isAutoRunning();
       autoButton.disabled = terminal;
-      autoButton.textContent = mounted.isAutoRunning() ? "Pause Auto" : "Auto Run";
+      autoButton.textContent = mounted.isAutoRunning() ? t("common.pauseAuto") : t("common.autoRun");
     };
     const restart = (seed = Number(seedInput.value)) => {
       mounted.stopAuto();
@@ -68,6 +69,7 @@ export const constraintGeneration: PrototypeDefinition = {
     container.querySelector<HTMLInputElement>("#show-candidates")!.onchange = (event) => { debug.showCandidates = (event.target as HTMLInputElement).checked; };
     const buttonSyncId = window.setInterval(syncButtons, 100);
     syncButtons();
+    refreshTranslations(container);
     return () => { window.clearInterval(buttonSyncId); mounted.destroy(); };
   },
 };

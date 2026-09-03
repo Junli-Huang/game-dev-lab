@@ -3,6 +3,7 @@ import { metadata } from "./metadata";
 import { mountFlowField, type InteractionMode } from "./prototype";
 import type { FieldView } from "./renderer";
 import "./style.css";
+import { t } from "../../i18n";
 
 export const flowField: PrototypeDefinition = {
   metadata,
@@ -96,7 +97,7 @@ agent.position +=
     bindSegments<FieldView>("view", (value) => { state.view = value; });
     container.querySelector<HTMLInputElement>("#show-agents")!.onchange = (event) => { state.showAgents = (event.target as HTMLInputElement).checked; };
     const pause = container.querySelector<HTMLButtonElement>("#pause")!;
-    pause.onclick = () => { mounted.togglePause(); pause.textContent = mounted.isPaused() ? "Resume" : "Pause"; };
+    pause.onclick = () => { mounted.togglePause(); pause.textContent = mounted.isPaused() ? t("common.resume") : t("common.pause"); };
     container.querySelector<HTMLButtonElement>("#reset")!.onclick = mounted.reset;
     return mounted.destroy;
   },

@@ -1,6 +1,7 @@
 import { renderRope, type DebugOptions } from "./renderer";
 import { RopeSimulation, type RopeSettings } from "./simulation";
 import type { VerletPoint } from "./verlet-point";
+import { t } from "../../i18n";
 
 export function mountVerletRope(
   canvas: HTMLCanvasElement,
@@ -88,7 +89,7 @@ export function mountVerletRope(
       fpsTime = time;
     }
     const phase = paused ? stepState.phase[0].toUpperCase() + stepState.phase.slice(1) : "Realtime";
-    stats.textContent = `FPS ${fps}  ·  Physics 120 Hz  ·  Phase ${phase}  ·  Solver ${stepState.solverIteration}/${settings.iterations}  ·  Avg Error ${error.average.toFixed(2)} px  ·  Max Error ${error.maximum.toFixed(2)} px`;
+    stats.textContent = `FPS ${fps}  ·  Physics 120 Hz  ·  ${t("stats.phase")} ${phase}  ·  ${t("stats.solver")} ${stepState.solverIteration}/${settings.iterations}  ·  ${t("stats.avgError")} ${error.average.toFixed(2)} px  ·  ${t("stats.maxError")} ${error.maximum.toFixed(2)} px`;
     phaseBadge.hidden = !(paused && stepState.phase === "predicted");
     history.innerHTML = stepState.history.length
       ? stepState.history.map((sample) => `<span><b>${sample.label}</b> ${sample.average.toFixed(2)}</span>`).join("")

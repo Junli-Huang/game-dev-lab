@@ -1,0 +1,4 @@
+.language-switcher { position: fixed; z-index: 50; top: 14px; right: 18px; display: flex; gap: 4px; padding: 4px; border: 1px solid #354766; border-radius: 11px; background: #0b1425dd; box-shadow: 0 8px 24px #0005; backdrop-filter: blur(8px); }
+.language-switcher button { padding: 6px 10px; border: 1px solid transparent; background: transparent; color: #91a4c0; font-size: .74rem; }
+.language-switcher button.active { border-color: #52cdb3; background: #214641; color: #d9fff6; }
+@media (max-width: 680px) { .language-switcher { top: 8px; right: 8px; } }

@@ -1,6 +1,7 @@
 import { SdfRenderer } from "./renderer";
 import { evaluateApplicationSdf, sdBox, sdCircle } from "./sdf";
 import type { Point2, SdfState } from "./state";
+import { t } from "../../i18n";
 
 type DragShape = "circle" | "box" | "player";
 
@@ -11,7 +12,7 @@ export function mountSdfPlayground(canvas: HTMLCanvasElement, state: SdfState, s
   } catch (reason) {
     console.error("SDF shader initialization failed.", reason);
     error.hidden = false;
-    error.textContent = `Shader initialization failed: ${reason instanceof Error ? reason.message : String(reason)}`;
+    error.textContent = `${t("sdf.shaderFailed")}: ${reason instanceof Error ? reason.message : String(reason)}`;
     return { destroy: () => undefined };
   }
 
@@ -80,7 +81,7 @@ export function mountSdfPlayground(canvas: HTMLCanvasElement, state: SdfState, s
       const distance = evaluateApplicationSdf(pointer, state);
       const sign = Math.abs(distance) < 0.003 ? "Boundary ≈ 0" : distance < 0 ? "Inside · negative" : "Outside · positive";
       probe.innerHTML = `<strong>SDF Probe</strong><span>x ${pointer.x.toFixed(3)} · y ${pointer.y.toFixed(3)}</span><span>distance ${distance.toFixed(4)} · ${sign}</span>`;
-    } else probe.innerHTML = "<strong>SDF Probe</strong><span>Move the pointer over the canvas.</span>";
+    } else probe.innerHTML = `<strong>SDF Probe</strong><span>${t("sdf.movePointer")}</span>`;
     animationId = requestAnimationFrame(frame);
   };
   animationId = requestAnimationFrame(frame);

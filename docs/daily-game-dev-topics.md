@@ -789,3 +789,16 @@ Prototype 状态
 > Daily Game Dev Topic Progress 的事实来源（Source of Truth）。
 
 后续选择每日技巧时，应参考本文件，避免重复已经介绍过的主题。
+
+---
+
+# Site Language
+
+`game-dev-lab` 网页支持：
+
+```text
+简体中文（zh-CN）
+English（en）
+```
+
+语言状态与 Simulation State 完全分离。后续新增 Prototype 时，所有用户可见文案必须同时提供中文与英文，并遵循 `docs/i18n-terminology.md` 的术语约定。

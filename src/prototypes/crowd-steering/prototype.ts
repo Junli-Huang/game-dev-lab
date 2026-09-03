@@ -2,6 +2,7 @@ import type { Vector2 } from "./agent";
 import { renderCrowdSteering, type SteeringDebugOptions } from "./renderer";
 import { CrowdSteeringSimulation, type SteeringSettings } from "./simulation";
 import { magnitude } from "./steering";
+import { t } from "../../i18n";
 
 export function mountCrowdSteering(
   canvas: HTMLCanvasElement,
@@ -73,7 +74,7 @@ export function mountCrowdSteering(
       (sum, agent) => sum + agent.debug.neighborCount,
       0,
     ) / Math.max(simulation.agents.length, 1);
-    stats.textContent = `FPS ${fps} · Fixed 60 Hz · Agents ${simulation.agents.length} · Separation ${settings.separationEnabled ? "ON" : "OFF"} · Avg Neighbors ${averageNeighbors.toFixed(1)}`;
+    stats.textContent = `FPS ${fps} · Fixed 60 Hz · ${t("common.agents")} ${simulation.agents.length} · ${t("stats.separation")} ${settings.separationEnabled ? "ON" : "OFF"} · ${t("stats.avgNeighbors")} ${averageNeighbors.toFixed(1)}`;
     renderInspector(inspector, simulation);
     animationId = requestAnimationFrame(frame);
   };
@@ -102,7 +103,7 @@ export function mountCrowdSteering(
 function renderInspector(inspector: HTMLElement, simulation: CrowdSteeringSimulation) {
   const agent = simulation.selectedAgent();
   if (!agent) {
-    inspector.innerHTML = "<p>Select an Agent to inspect its local steering.</p>";
+    inspector.innerHTML = `<p>${t("crowd.selectAgent")}</p>`;
     return;
   }
   inspector.innerHTML = `

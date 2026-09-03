@@ -1,6 +1,7 @@
 import type { PrototypeDefinition } from "../../app/types";
 import { metadata } from "./metadata";
 import { mountBouncingBall } from "./prototype";
+import { t } from "../../i18n";
 
 export const bouncingBall: PrototypeDefinition = {
   metadata,
@@ -38,7 +39,7 @@ if (ball.bottom > ground) {
     const velocity = container.querySelector<HTMLInputElement>("#velocity")!;
     const pause = container.querySelector<HTMLButtonElement>("#pause")!;
     const simulation = mountBouncingBall(canvas, gravity, velocity);
-    pause.onclick = () => { simulation.togglePause(); pause.textContent = simulation.isPaused() ? "Resume" : "Pause"; };
+    pause.onclick = () => { simulation.togglePause(); pause.textContent = simulation.isPaused() ? t("common.resume") : t("common.pause"); };
     container.querySelector<HTMLButtonElement>("#reset")!.onclick = simulation.reset;
     gravity.oninput = () => { container.querySelector("#gravity-value")!.textContent = gravity.value; };
     return simulation.destroy;

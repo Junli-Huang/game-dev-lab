@@ -4,6 +4,7 @@ import { metadata } from "./metadata";
 import { mountVerletRope } from "./prototype";
 import type { DebugOptions } from "./renderer";
 import type { RopeSettings } from "./simulation";
+import { t } from "../../i18n";
 
 const iterationChoices = [1, 2, 4, 8, 16, 32];
 
@@ -157,11 +158,11 @@ correctPositions(A, B, error)</code></pre></section>
     pause.onclick = () => {
       simulation.togglePause();
       const paused = simulation.isPaused();
-      pause.textContent = paused ? "Resume" : "Pause";
+      pause.textContent = paused ? t("common.resume") : t("common.pause");
       step.disabled = !paused;
       solverStep.disabled = !paused;
-      stepAvailability.textContent = paused ? "Step controls are now available" : "Available while paused";
-      stepGuideStatus.textContent = paused ? "Step controls are available" : "Pause to activate both controls";
+      stepAvailability.textContent = paused ? t("rope.stepNow") : t("rope.availablePaused");
+      stepGuideStatus.textContent = paused ? t("rope.stepAvailable") : t("rope.pauseActivate");
       step.title = paused ? "Run one complete 1/120 s physics step." : "Available while paused. Runs one complete 1/120 s physics step.";
       solverStep.title = paused ? "First click predicts; later clicks run one constraint pass." : "Available while paused. First click predicts; later clicks run one constraint pass.";
       stepAvailability.classList.toggle("available", paused);

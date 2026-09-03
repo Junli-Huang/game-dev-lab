@@ -1,5 +1,6 @@
 import { renderFlowField, type FieldView } from "./renderer";
 import { FlowSimulation, type FlowSettings } from "./simulation";
+import { t } from "../../i18n";
 
 export type InteractionMode = "target" | "obstacle" | "erase" | "mud" | "normal" | "spawn";
 
@@ -99,7 +100,7 @@ export function mountFlowField(canvas: HTMLCanvasElement, settings: FlowSettings
       }
     } else accumulator = 0;
     renderFlowField(context, simulation, state.view, state.showAgents);
-    stats.textContent = `Agents ${simulation.agents.length} · Cells ${simulation.grid.cells.length} · Shared fields 1 · Rebuilds ${fieldBuilds}`;
+    stats.textContent = `${t("common.agents")} ${simulation.agents.length} · ${t("stats.cells")} ${simulation.grid.cells.length} · ${t("stats.sharedFields")} 1 · ${t("stats.rebuilds")} ${fieldBuilds}`;
     animationId = requestAnimationFrame(frame);
   };
   animationId = requestAnimationFrame(frame);
