@@ -2,6 +2,9 @@
 .rope-demo canvas { touch-action: none; }
 .demo-stats { position: absolute; top: 24px; right: 24px; max-width: calc(100% - 48px); padding: 7px 10px; border-radius: 7px; background: #091223cc; color: #bffced; font: 700 .72rem ui-monospace, monospace; }
 .demo-hint { position: absolute; left: 28px; bottom: 18px; margin: 0; color: #afbed6; font-size: .8rem; }
+.prediction-badge { position: absolute; top: 24px; left: 24px; display: grid; padding: 9px 12px; border: 1px solid #ffbe55; border-radius: 8px; background: #2d2109e8; color: #ffe3aa; font-size: .76rem; box-shadow: 0 0 22px #ffbe5530; }
+.prediction-badge[hidden] { display: none; }
+.prediction-badge span { color: #ffbe55; font: 700 .65rem ui-monospace, monospace; letter-spacing: .04em; text-transform: uppercase; }
 .rope-controls { align-items: flex-start; }
 .rope-controls label { flex: 1 1 180px; display: grid; grid-template-columns: auto auto; justify-content: space-between; }
 .rope-controls input { grid-column: 1 / -1; width: 100%; }
@@ -16,6 +19,13 @@
 .segmented-control button.active { border-color: #52cdb3; color: #d9fff6; background: #214641; box-shadow: inset 0 0 0 1px #6ee7c733; }
 .preset-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .preset-row button { padding: 8px 12px; font-size: .78rem; }
+.convergence-panel { display: flex; align-items: center; gap: 18px; padding-top: 14px; border-top: 1px solid #273752; }
+.convergence-panel > div:first-child { display: grid; flex: 0 0 auto; }
+.convergence-panel small { color: #71829e; font-size: .68rem; }
+.solver-history { display: flex; gap: 6px; min-width: 0; overflow-x: auto; padding-bottom: 2px; }
+.solver-history span { flex: 0 0 auto; padding: 5px 8px; border-radius: 6px; background: #0b1425; color: #ffd384; font: 700 .7rem ui-monospace, monospace; }
+.solver-history span b { color: #6ee7c7; }
+.solver-history .empty-history { color: #71829e; font-family: inherit; font-weight: 500; }
 button:disabled { cursor: not-allowed; opacity: .42; }
 .debug-controls { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin: 0 0 52px; padding: 22px; background: #101a2c; border: 1px solid #273752; border-radius: 14px; }
 .debug-controls > div { margin-right: auto; }
@@ -41,4 +51,7 @@ button:disabled { cursor: not-allowed; opacity: .42; }
   .segmented-control { grid-template-columns: repeat(3, 1fr); }
   .pipeline { align-items: stretch; flex-direction: column; }
   .pipeline b { line-height: 1; transform: none; }
+  .convergence-panel { align-items: flex-start; flex-direction: column; }
+  .solver-history { width: 100%; }
+  .prediction-badge { position: static; margin: 8px; }
 }

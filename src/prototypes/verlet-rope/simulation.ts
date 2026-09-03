@@ -8,6 +8,12 @@ export interface ConstraintErrorStats {
   maximum: number;
 }
 
+export type PhysicsStepPhase = "ready" | "predicted" | "solving" | "complete";
+
+export interface ConstraintErrorSample extends ConstraintErrorStats {
+  label: string;
+}
+
 export class RopeSimulation {
   points: VerletPoint[] = [];
   constraints: DistanceConstraint[] = [];
@@ -16,6 +22,9 @@ export class RopeSimulation {
   private anchorY = 42;
   private draggedPoint?: VerletPoint;
   private dragTarget?: Vector2;
+  private stepPhase: PhysicsStepPhase = "ready";
+  private solverIteration = 0;
+  private errorHistory: ConstraintErrorSample[] = [];
 
   constructor(private width: number, height: number, public settings: RopeSettings) {
     this.groundY = height - 38;
@@ -31,21 +40,72 @@ export class RopeSimulation {
     this.constraints = this.points.slice(1).map((point, index) => ({
       pointA: this.points[index], pointB: point, targetLength: this.settings.segmentLength,
     }));
+    this.stepPhase = "ready";
+    this.solverIteration = 0;
+    this.errorHistory = [];
   }
 
   step(deltaTime: number) {
+    // A full frame step finishes an existing teaching step rather than
+    // integrating twice. Realtime and teaching controls share this path.
+    if (this.hasPartialStep()) {
+      this.completeCurrentStep();
+      return;
+    }
+    this.beginStep(deltaTime);
+    this.completeCurrentStep();
+  }
+
+  beginStep(deltaTime: number) {
+    if (this.hasPartialStep()) return false;
     this.integratePoints(deltaTime);
     this.synchronizeDraggedPoint();
-    // Each pass fixes errors introduced by neighboring constraints. Repeating
-    // the pass makes the full chain converge toward all target lengths.
-    for (let pass = 0; pass < this.settings.iterations; pass += 1) {
-      // The mouse target is a hard kinematic constraint. Reapplying it before
-      // every pass makes ownership explicit even if new solvers are added later.
-      this.synchronizeDraggedPoint();
-      this.constraints.forEach(solveDistanceConstraint);
-      this.projectPointsAboveGround();
-    }
+    this.stepPhase = "predicted";
+    this.solverIteration = 0;
+    this.errorHistory = [{ label: "Pred", ...this.getConstraintErrorStats() }];
+    return true;
+  }
+
+  solveConstraintPass() {
+    if (!this.hasPartialStep() || this.solverIteration >= this.settings.iterations) return false;
+    // The mouse target is a hard kinematic constraint. Reapplying it before
+    // every pass makes ownership explicit even if new solvers are added later.
+    this.synchronizeDraggedPoint();
+    this.constraints.forEach(solveDistanceConstraint);
+    this.projectPointsAboveGround();
+    this.solverIteration += 1;
+    this.stepPhase = "solving";
+    this.errorHistory.push({ label: String(this.solverIteration), ...this.getConstraintErrorStats() });
+    if (this.solverIteration === this.settings.iterations) this.finishStep();
+    return true;
+  }
+
+  completeCurrentStep() {
+    if (!this.hasPartialStep()) return false;
+    while (this.solverIteration < this.settings.iterations) this.solveConstraintPass();
+    return true;
+  }
+
+  private finishStep() {
     this.applyGroundDamping();
+    this.stepPhase = "complete";
+  }
+
+  resetPartialStep() {
+    if (this.hasPartialStep()) this.rebuild();
+  }
+
+  hasPartialStep() {
+    return this.stepPhase === "predicted" || this.stepPhase === "solving";
+  }
+
+  getStepState() {
+    return {
+      phase: this.stepPhase,
+      solverIteration: this.solverIteration,
+      solverIterations: this.settings.iterations,
+      history: this.errorHistory as readonly ConstraintErrorSample[],
+    };
   }
 
   getConstraintErrorStats(): ConstraintErrorStats {

@@ -76,6 +76,42 @@ The presets provide intentionally instructional, rather than real-world, paramet
 
 Pause and Frame Step advance one complete physics step for controlled observation.
 
+## Solver Step and Physics Step Phases
+
+V0.2.1 exposes the stages inside one fixed physics step:
+
+~~~text
+Ready
+↓ Solver Step
+Predicted — Verlet Integration has run, constraints have not
+↓ Solver Step
+Solving 1 / N
+↓ Solver Step
+Solving 2 / N
+...
+↓ Solver Step
+Complete N / N — one-time ground response has run
+~~~
+
+The first Solver Step begins a new frame and performs only position prediction. Every later click executes exactly one shared constraint pass. After the final pass, the simulation applies the per-frame ground damping once and marks the step complete.
+
+Frame Step still means one complete physics step. If a partial step already exists, it finishes the remaining passes without integrating a second time. Resume also completes a partial step before returning to the realtime fixed loop.
+
+Changing a parameter or preset during a partial teaching step resets the rope to the Ready phase, avoiding ambiguous states such as changing from pass 3/8 to 3/32.
+
+## Constraint Convergence
+
+The current-step history records the real average error at Prediction and after every constraint pass:
+
+~~~text
+Pred  8.42
+1     4.51
+2     2.73
+3     1.62
+~~~
+
+Values are not modified to appear monotonic. A Gauss-Seidel-style local correction can disturb neighboring constraints even while the chain generally converges.
+
 ## Debug Views
 
 - Particles: current particle positions
@@ -96,12 +132,12 @@ Pointer events update only a drag target. During fixed simulation the dragged pa
 - constraint.ts: distance correction
 - simulation.ts: integration, constraint passes, collision and error metrics
 - renderer.ts: rope and read-only debug overlays
-- prototype.ts: pointer interaction, fixed timestep, pause and frame stepping
+- prototype.ts: pointer interaction, fixed timestep, pause, frame stepping and solver stepping
 - index.ts: controls, presets and teaching content
 
 ## Scope
 
-V0.2 remains a rope/particle-chain experiment. It intentionally does not add XPBD, cloth, soft bodies, fluids, ragdolls or a general-purpose constraint framework.
+V0.2.1 remains a rope/particle-chain experiment. It intentionally does not add XPBD, bending constraints, cloth, soft bodies, fluids, ragdolls or a general-purpose constraint framework.
 
 ## Next Experiments
 

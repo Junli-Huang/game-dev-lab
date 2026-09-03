@@ -215,7 +215,7 @@ Domain:
 
 Status: Polished
 
-V0.2 Expansion:
+V0.2.1 Expansion:
 Existing Prototype / Completed
 
 Prototype:
@@ -227,6 +227,7 @@ Core Concepts:
 - Position Constraints
 - Constraint Iterations
 - Constraint Error / Solver Convergence
+- Physics Step Phases
 - Fixed Timestep
 - Kinematic / Controlled Point
 - Ground Collision
@@ -279,6 +280,8 @@ Dragging
 Ground Collision
 Pause
 Frame Step
+Solver Step
+Prediction / Pass-by-Pass Convergence History
 Loose / Normal / Tight / Heavy Gravity Presets
 Parameter Controls
 ```
