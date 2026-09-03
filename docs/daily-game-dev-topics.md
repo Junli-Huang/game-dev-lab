@@ -582,6 +582,9 @@ Domain:
 
 Status: Prototyped
 
+V0.1.1:
+Propagation Step Counter Semantics / Completed
+
 Prototype:
 src/prototypes/constraint-generation
 

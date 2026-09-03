@@ -12,7 +12,7 @@ export const constraintGeneration: PrototypeDefinition = {
     container.innerHTML = `
       <main class="prototype-page shell constraint-generation-page">
         <a class="back-link" href="#/">← All prototypes</a>
-        <header class="prototype-heading"><p class="eyebrow">Prototype 005 · Procedural Generation · V0.1</p><h1>Constraint Generation Lab</h1><p>WFC Core: Collapse + Propagation.<br>A Cell is not empty before generation — it contains several still-valid possibilities.</p></header>
+        <header class="prototype-heading"><p class="eyebrow">Prototype 005 · Procedural Generation · V0.1.1</p><h1>Constraint Generation Lab</h1><p>WFC Core: Collapse + Propagation.<br>A Cell is not empty before generation — it contains several still-valid possibilities.</p></header>
         <section class="demo-panel generation-demo" aria-label="Interactive constraint generation demo"><canvas width="820" height="560"></canvas><div id="generation-stats" class="demo-stats"></div><div id="generation-phase" class="generation-phase ready"></div></section>
         <section class="controls generation-controls"><button id="collapse-step">Collapse Step</button><button id="propagation-step">Propagation Step</button><button id="auto-run" class="secondary">Auto Run</button><button id="restart" class="secondary">Restart</button><label class="seed-control">Seed <input id="seed" type="number" min="1" step="1" value="1337"></label><button id="random-seed" class="secondary compact">Random Seed</button></section>
         <section class="generation-dashboard">

@@ -68,6 +68,9 @@ export class ConstraintGenerationSimulation {
     }
     const source = this.propagationQueue.shift()!;
     this.queued.delete(source);
+    // A Propagation Step counts one source Cell taken from the FIFO queue,
+    // regardless of whether processing that source reveals a contradiction.
+    this.propagationCount += 1;
     this.currentPropagationCell = source;
     this.lastChangedCells = [];
 
@@ -90,7 +93,6 @@ export class ConstraintGenerationSimulation {
       this.enqueue(neighbor);
     }
 
-    this.propagationCount += 1;
     if (this.propagationQueue.length === 0) {
       this.phase = this.isComplete() ? "complete" : "ready";
     } else {

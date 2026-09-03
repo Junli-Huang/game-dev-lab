@@ -1,4 +1,4 @@
-# Constraint Generation Lab
+# Constraint Generation Lab V0.1.1
 
 ## Purpose
 
@@ -84,6 +84,8 @@ Initialize all Cells with every candidate
 ```
 
 `Collapse Step` performs only the decision and seeds the queue. `Propagation Step` processes one queued Cell. `Auto Run` chooses the appropriate next action until generation ends.
+
+`Collapse Decisions` counts completed Cell collapses. `Propagation Steps` counts source Cells taken from and processed from the FIFO queue, including a source whose processing reveals a contradiction; it is not a candidate-removal or neighbor-check count.
 
 ## Debug Views
 
