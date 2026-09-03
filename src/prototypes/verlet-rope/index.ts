@@ -13,7 +13,7 @@ export const verletRope: PrototypeDefinition = {
     container.innerHTML = `
       <main class="prototype-page shell">
         <a class="back-link" href="#/">← All prototypes</a>
-        <header class="prototype-heading"><p class="eyebrow">Prototype 001 · ${metadata.category} · V0.2.1</p><h1>${metadata.title}</h1><p>${metadata.description}<br>Use a rope to separate position prediction from position-based constraint correction.</p></header>
+        <header class="prototype-heading"><p class="eyebrow">Prototype 001 · ${metadata.category} · V0.2.2</p><h1>${metadata.title}</h1><p>${metadata.description}<br>Use a rope to separate position prediction from position-based constraint correction.</p></header>
         <section class="demo-panel rope-demo" aria-label="Interactive position-based rope demo"><canvas width="900" height="560"></canvas><div id="prediction-badge" class="prediction-badge" hidden><strong>Predicted Positions</strong><span>Constraints NOT solved yet</span></div><div id="rope-stats" class="demo-stats"></div><p class="demo-hint">Drag the rope, then Pause. Use Solver Step to watch constraints converge one pass at a time.</p></section>
 
         <section class="controls rope-controls" aria-label="Simulation controls">
@@ -69,8 +69,19 @@ correctPositions(A, B, error)</code></pre></section>
         </article>
       </main>`;
 
-    const settings: RopeSettings = { gravity: 900, pointCount: 20, segmentLength: 20, iterations: 8 };
-    const debug: DebugOptions = { showPoints: true, showConstraints: false, showPrevious: false, showVelocity: false, showConstraintError: false };
+    const settings: RopeSettings = {
+      gravity: 900,
+      pointCount: 20,
+      segmentLength: 20,
+      iterations: 8,
+    };
+    const debug: DebugOptions = {
+      showPoints: true,
+      showConstraints: false,
+      showPrevious: false,
+      showVelocity: false,
+      showConstraintError: false,
+    };
     const simulation = mountVerletRope(
       container.querySelector("canvas")!,
       settings,
@@ -88,7 +99,9 @@ correctPositions(A, B, error)</code></pre></section>
         output.value = input.value;
         simulation.resetPartialStep();
       };
-      if (rebuild) input.onchange = simulation.rebuild;
+      if (rebuild) {
+        input.onchange = simulation.rebuild;
+      }
     };
     bindRange("gravity", "gravity");
     bindRange("points", "pointCount", true);
@@ -100,7 +113,9 @@ correctPositions(A, B, error)</code></pre></section>
       iterationButtons.forEach((button) => button.classList.toggle("active", Number(button.dataset.iterations) === iterations));
       simulation.resetPartialStep();
     };
-    iterationButtons.forEach((button) => { button.onclick = () => selectIterations(Number(button.dataset.iterations)); });
+    iterationButtons.forEach((button) => {
+      button.onclick = () => selectIterations(Number(button.dataset.iterations));
+    });
     selectIterations(settings.iterations);
 
     const gravityInput = container.querySelector<HTMLInputElement>("#gravity")!;
@@ -112,13 +127,20 @@ correctPositions(A, B, error)</code></pre></section>
       gravityOutput.value = String(gravity);
       simulation.rebuild();
     };
-    const presets: Record<string, [number, number]> = { loose: [1, 900], normal: [8, 900], tight: [32, 900], heavy: [4, 2400] };
+    const presets: Record<string, [number, number]> = {
+      loose: [1, 900],
+      normal: [8, 900],
+      tight: [32, 900],
+      heavy: [4, 2400],
+    };
     container.querySelectorAll<HTMLButtonElement>("[data-preset]").forEach((button) => {
       button.onclick = () => applyPreset(...presets[button.dataset.preset!]);
     });
 
     const bindDebug = (id: string, key: keyof DebugOptions) => {
-      container.querySelector<HTMLInputElement>(`#${id}`)!.onchange = (event) => { debug[key] = (event.target as HTMLInputElement).checked; };
+      container.querySelector<HTMLInputElement>(`#${id}`)!.onchange = (event) => {
+        debug[key] = (event.target as HTMLInputElement).checked;
+      };
     };
     bindDebug("show-points", "showPoints");
     bindDebug("show-constraints", "showConstraints");

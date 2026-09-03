@@ -129,7 +129,7 @@ Pointer events update only a drag target. During fixed simulation the dragged pa
 ## Code Structure
 
 - verlet-point.ts: particle state
-- constraint.ts: distance correction
+- constraint.ts: distance correction and shared constraint-error calculation
 - simulation.ts: integration, constraint passes, collision and error metrics
 - renderer.ts: rope and read-only debug overlays
 - prototype.ts: pointer interaction, fixed timestep, pause, frame stepping and solver stepping
@@ -137,7 +137,7 @@ Pointer events update only a drag target. During fixed simulation the dragged pa
 
 ## Scope
 
-V0.2.1 remains a rope/particle-chain experiment. It intentionally does not add XPBD, bending constraints, cloth, soft bodies, fluids, ragdolls or a general-purpose constraint framework.
+V0.2.2 remains a rope/particle-chain experiment. It intentionally does not add XPBD, bending constraints, cloth, soft bodies, fluids, ragdolls or a general-purpose constraint framework.
 
 ## Next Experiments
 

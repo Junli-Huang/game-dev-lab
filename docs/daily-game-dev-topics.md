@@ -215,7 +215,7 @@ Domain:
 
 Status: Polished
 
-V0.2.1 Expansion:
+V0.2.2 Expansion:
 Existing Prototype / Completed
 
 Prototype:

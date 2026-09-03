@@ -1,7 +1,16 @@
-import { solveDistanceConstraint, type DistanceConstraint } from "./constraint";
+import {
+  getDistanceConstraintError,
+  solveDistanceConstraint,
+  type DistanceConstraint,
+} from "./constraint";
 import { createPoint, type Vector2, type VerletPoint } from "./verlet-point";
 
-export interface RopeSettings { gravity: number; pointCount: number; segmentLength: number; iterations: number }
+export interface RopeSettings {
+  gravity: number;
+  pointCount: number;
+  segmentLength: number;
+  iterations: number;
+}
 
 export interface ConstraintErrorStats {
   average: number;
@@ -57,7 +66,9 @@ export class RopeSimulation {
   }
 
   beginStep(deltaTime: number) {
-    if (this.hasPartialStep()) return false;
+    if (this.hasPartialStep()) {
+      return false;
+    }
     this.integratePoints(deltaTime);
     this.synchronizeDraggedPoint();
     this.stepPhase = "predicted";
@@ -67,7 +78,9 @@ export class RopeSimulation {
   }
 
   solveConstraintPass() {
-    if (!this.hasPartialStep() || this.solverIteration >= this.settings.iterations) return false;
+    if (!this.hasPartialStep() || this.solverIteration >= this.settings.iterations) {
+      return false;
+    }
     // The mouse target is a hard kinematic constraint. Reapplying it before
     // every pass makes ownership explicit even if new solvers are added later.
     this.synchronizeDraggedPoint();
@@ -76,13 +89,19 @@ export class RopeSimulation {
     this.solverIteration += 1;
     this.stepPhase = "solving";
     this.errorHistory.push({ label: String(this.solverIteration), ...this.getConstraintErrorStats() });
-    if (this.solverIteration === this.settings.iterations) this.finishStep();
+    if (this.solverIteration === this.settings.iterations) {
+      this.finishStep();
+    }
     return true;
   }
 
   completeCurrentStep() {
-    if (!this.hasPartialStep()) return false;
-    while (this.solverIteration < this.settings.iterations) this.solveConstraintPass();
+    if (!this.hasPartialStep()) {
+      return false;
+    }
+    while (this.solverIteration < this.settings.iterations) {
+      this.solveConstraintPass();
+    }
     return true;
   }
 
@@ -92,7 +111,9 @@ export class RopeSimulation {
   }
 
   resetPartialStep() {
-    if (this.hasPartialStep()) this.rebuild();
+    if (this.hasPartialStep()) {
+      this.rebuild();
+    }
   }
 
   hasPartialStep() {
@@ -109,15 +130,13 @@ export class RopeSimulation {
   }
 
   getConstraintErrorStats(): ConstraintErrorStats {
-    if (this.constraints.length === 0) return { average: 0, maximum: 0 };
+    if (this.constraints.length === 0) {
+      return { average: 0, maximum: 0 };
+    }
     let total = 0;
     let maximum = 0;
     for (const constraint of this.constraints) {
-      const distance = Math.hypot(
-        constraint.pointB.position.x - constraint.pointA.position.x,
-        constraint.pointB.position.y - constraint.pointA.position.y,
-      );
-      const error = Math.abs(distance - constraint.targetLength);
+      const error = getDistanceConstraintError(constraint);
       total += error;
       maximum = Math.max(maximum, error);
     }
@@ -126,7 +145,9 @@ export class RopeSimulation {
 
   private integratePoints(deltaTime: number) {
     for (const point of this.points) {
-      if (point.isPinned || point.isDragged) continue;
+      if (point.isPinned || point.isDragged) {
+        continue;
+      }
       // Verlet infers velocity from two positions, so no explicit velocity is stored.
       const velocityX = (point.position.x - point.previousPosition.x) * 0.995;
       const velocityY = (point.position.y - point.previousPosition.y) * 0.995;
@@ -148,14 +169,18 @@ export class RopeSimulation {
   }
 
   updateDragTarget(target: Vector2) {
-    if (!this.draggedPoint) return;
+    if (!this.draggedPoint) {
+      return;
+    }
     // Input records intent only. The simulation applies this target at its own
     // fixed-step boundary instead of pointer events writing physics state.
     this.dragTarget = { ...target };
   }
 
   endDrag() {
-    if (!this.draggedPoint) return;
+    if (!this.draggedPoint) {
+      return;
+    }
     this.synchronizeDraggedPoint();
     // Aligning both positions encodes zero release velocity. A future throw
     // mode could instead reconstruct previousPosition from pointer velocity.
@@ -171,7 +196,9 @@ export class RopeSimulation {
   }
 
   synchronizeDraggedPoint() {
-    if (!this.draggedPoint || !this.dragTarget) return;
+    if (!this.draggedPoint || !this.dragTarget) {
+      return;
+    }
     this.draggedPoint.position.x = this.dragTarget.x;
     this.draggedPoint.position.y = this.dragTarget.y;
     this.draggedPoint.previousPosition.x = this.dragTarget.x;
@@ -180,14 +207,18 @@ export class RopeSimulation {
 
   private projectPointsAboveGround() {
     for (const point of this.points) {
-      if (point.isPinned || point.position.y <= this.groundY) continue;
+      if (point.isPinned || point.position.y <= this.groundY) {
+        continue;
+      }
       point.position.y = this.groundY;
     }
   }
 
   private applyGroundDamping() {
     for (const point of this.points) {
-      if (point.isPinned || point.position.y < this.groundY - 0.001) continue;
+      if (point.isPinned || point.position.y < this.groundY - 0.001) {
+        continue;
+      }
       // This velocity response runs once per simulation step, outside the
       // constraint loop. Iterations therefore change solver accuracy without
       // secretly changing the amount of ground friction.

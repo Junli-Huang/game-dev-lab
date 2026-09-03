@@ -6,6 +6,13 @@ export interface DistanceConstraint {
   targetLength: number;
 }
 
+export function getDistanceConstraintError(constraint: DistanceConstraint) {
+  const deltaX = constraint.pointB.position.x - constraint.pointA.position.x;
+  const deltaY = constraint.pointB.position.y - constraint.pointA.position.y;
+  const currentDistance = Math.hypot(deltaX, deltaY);
+  return Math.abs(currentDistance - constraint.targetLength);
+}
+
 export function solveDistanceConstraint(constraint: DistanceConstraint) {
   const { pointA, pointB, targetLength } = constraint;
   const pointAIsControlled = pointA.isPinned || pointA.isDragged;
@@ -13,7 +20,9 @@ export function solveDistanceConstraint(constraint: DistanceConstraint) {
   const deltaX = pointB.position.x - pointA.position.x;
   const deltaY = pointB.position.y - pointA.position.y;
   const currentDistance = Math.hypot(deltaX, deltaY);
-  if (currentDistance < 0.0001 || (pointAIsControlled && pointBIsControlled)) return;
+  if (currentDistance < 0.0001 || (pointAIsControlled && pointBIsControlled)) {
+    return;
+  }
 
   const distanceError = currentDistance - targetLength;
   const correctionRatio = distanceError / currentDistance;
