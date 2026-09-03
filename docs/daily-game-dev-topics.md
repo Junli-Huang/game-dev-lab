@@ -496,6 +496,9 @@ Domain:
 
 Status: Prototyped
 
+V0.1.1:
+Distance-weighted Separation / Completed
+
 Prototype:
 src/prototypes/crowd-steering
 

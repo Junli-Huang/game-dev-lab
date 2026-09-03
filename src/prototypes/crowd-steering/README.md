@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This Prototype explains why Agents that share one Target do not have to collapse into one point. V0.1 combines two local movement behaviors:
+This Prototype explains why Agents that share one Target do not have to collapse into one point. V0.1.1 combines two local movement behaviors:
 
 ~~~text
 Seek
@@ -20,9 +20,13 @@ seekSteering = desiredVelocity - currentVelocity
 
 Seek adjusts the Agent's existing motion toward a desired velocity. It does not directly translate position along the target direction.
 
+The small target stop radius is only a dead zone to prevent repeated target crossing. It is not Arrival because desired speed does not gradually decrease with distance.
+
 ## Separation
 
 Every neighbor inside Neighbor Radius contributes a direction away from itself. Closer neighbors contribute more strongly.
+
+The accumulated vector keeps its proximity-weighted magnitude: a distant neighbor produces a short Separation vector, while a close neighbor produces a longer one. Only the final weighted sum is limited by Max Force.
 
 Separation is a steering force applied before overlap. It is not collision resolution and never directly pushes Agent positions apart.
 
@@ -67,6 +71,7 @@ Read-only Renderer
 2. Choose Balanced without changing the goal and observe local spacing.
 3. Choose Strong Separation and observe local repulsion competing with target attraction.
 4. Choose Crowded to make the O(N²) neighbor interaction easier to inspect.
+5. Select one Agent, enable Show Separation, and watch its vector grow as neighbors crowd closer.
 
 ## Pathfinding vs Steering
 

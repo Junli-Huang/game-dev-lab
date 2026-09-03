@@ -18,7 +18,7 @@ export const crowdSteering: PrototypeDefinition = {
     container.innerHTML = `
       <main class="prototype-page shell">
         <a class="back-link" href="#/">← All prototypes</a>
-        <header class="prototype-heading"><p class="eyebrow">Prototype 004 · AI · V0.1</p><h1>Crowd Steering Lab</h1><p>Why do many units moving toward one target not collapse into a single point?<br>Combine target-seeking intent with local separation and inspect the result.</p></header>
+        <header class="prototype-heading"><p class="eyebrow">Prototype 004 · AI · V0.1.1</p><h1>Crowd Steering Lab</h1><p>Why do many units moving toward one target not collapse into a single point?<br>Combine target-seeking intent with local separation and inspect the result.</p></header>
 
         <section class="demo-panel steering-demo" aria-label="Interactive crowd steering demo">
           <canvas width="900" height="560"></canvas>
@@ -67,7 +67,7 @@ export const crowdSteering: PrototypeDefinition = {
 
         <section class="recommended-steering">
           <div><p class="eyebrow">Recommended Experiment</p><h2>From stacking to local spacing</h2></div>
-          <ol><li><strong>Seek Only:</strong> move the Target and watch Agents stack.</li><li><strong>Balanced:</strong> keep the same goal and observe local spacing.</li><li><strong>Strong Separation:</strong> see repulsion compete with target attraction.</li></ol>
+          <ol><li><strong>Seek Only:</strong> move the Target and watch Agents stack.</li><li><strong>Balanced:</strong> keep the same goal and observe local spacing.</li><li><strong>Strong Separation:</strong> see repulsion compete with target attraction.</li></ol><p>Select one Agent and enable Show Separation. Move the Target so neighbors crowd around it, then watch the vector grow as neighbors get closer.</p>
         </section>
 
         <article class="explanation">
@@ -75,7 +75,7 @@ export const crowdSteering: PrototypeDefinition = {
           <section><h2>Seek</h2><pre><code>desiredVelocity =
   normalize(target - position) * maxSpeed
 
-seek = desiredVelocity - currentVelocity</code></pre><p>Seek adjusts the current motion toward a desired velocity. It is more than directly adding a target direction to position.</p></section>
+seek = desiredVelocity - currentVelocity</code></pre><p>Seek adjusts the current motion toward a desired velocity. It is more than directly adding a target direction to position. The small stop radius prevents endless target crossing; gradual Arrival behavior is not implemented in V0.1.</p></section>
           <section><h2>Separation</h2><pre><code>for each nearby neighbor:
   away += normalize(self - neighbor)
         * proximity

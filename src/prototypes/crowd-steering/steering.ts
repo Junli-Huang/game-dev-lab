@@ -25,6 +25,8 @@ export function calculateSeek(
 
   // Seek changes the current motion toward a desired velocity. It is not the
   // same as directly translating the Agent along the target direction.
+  // The small stop radius prevents endless target crossing. It is only a dead
+  // zone, not Arrival: desired speed does not gradually decrease with distance.
   const desiredVelocity = distance < 6
     ? { x: 0, y: 0 }
     : { x: offsetX / distance * maxSpeed, y: offsetY / distance * maxSpeed };
@@ -71,16 +73,13 @@ export function calculateSeparation(
     return { steering: { x: 0, y: 0 }, neighborCount };
   }
 
-  // Separation changes velocity before overlap occurs. It is intentionally a
-  // steering contribution, not a collision solver that pushes positions apart.
-  const desiredVelocity = {
-    x: awayX / awayLength * maxSpeed,
-    y: awayY / awayLength * maxSpeed,
-  };
+  // Preserve the accumulated proximity magnitude so distant neighbors create
+  // weak steering and close neighbors create strong steering. Normalizing here
+  // would erase the distance weighting before behavior weights are combined.
   return {
     steering: {
-      x: desiredVelocity.x - agent.velocity.x,
-      y: desiredVelocity.y - agent.velocity.y,
+      x: awayX * maxSpeed,
+      y: awayY * maxSpeed,
     },
     neighborCount,
   };
