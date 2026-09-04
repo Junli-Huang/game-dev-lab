@@ -494,7 +494,7 @@ Domain:
 - Simulation
 - Crowd Movement
 
-Status: Prototyped
+Status: Polished
 
 V0.1.1:
 Distance-weighted Separation / Completed
@@ -555,6 +555,10 @@ Velocity / Seek / Separation / Final Steering Debug
 Selected Agent Inspector
 Neighbor Radius and Neighbor Highlight
 Fixed 60 Hz Simulation
+Distance-weighted Separation Magnitude
+Pathfinding vs Steering
+Separation vs Collision
+Dead Zone vs Arrival
 ```
 
 已明确限制：
@@ -580,7 +584,7 @@ Domain:
 - Constraint Satisfaction
 - World Generation
 
-Status: Prototyped
+Status: Polished
 
 V0.1.1:
 Propagation Step Counter Semantics / Completed
@@ -642,6 +646,18 @@ Propagation Queue
 Current / Changed / Queued Highlights
 Contradiction State
 ```
+
+统计语义：
+
+```text
+Collapse Decisions
+= 实际执行的 Cell Collapse 决策次数
+
+Propagation Steps
+= 实际从 FIFO Queue 中取出并处理的 Source Cell 数量
+```
+
+即使某次 Propagation Step 最终发现 Contradiction，该 Step 仍然计数。
 
 已明确限制：
 
@@ -802,3 +818,81 @@ English（en）
 ```
 
 语言状态与 Simulation State 完全分离。后续新增 Prototype 时，所有用户可见文案必须同时提供中文与英文，并遵循 `docs/i18n-terminology.md` 的术语约定。
+
+Current Implementation:
+
+- Global language switcher
+- zh-CN / en
+- Browser-language detection
+- localStorage persistence
+- `document.documentElement.lang` synchronization
+- Homepage localization
+- Prototype metadata localization
+- Prototype controls / teaching copy localization
+- Runtime stats / phase message localization
+- Shared terminology rules
+- English fallback
+
+架构原则：
+
+```text
+UI Language
+↓
+i18n Layer
+
+Simulation / Algorithm
+↓
+Language Independent
+```
+
+语言切换不得重置 Prototype State，包括：
+
+```text
+Physics Step
+Solver Step
+Propagation Queue
+Collapsed Cells
+Seed
+Random Sequence
+Agent State
+Debug State
+```
+
+Terminology:
+`docs/i18n-terminology.md`
+
+该术语表统一维护 Constraint、Constraint Propagation、Entropy、Minimum Entropy、Collapse、Steering、Separation、Solver、Position-Based Dynamics、Flow Field 与 Signed Distance Field 等术语；后续新增 Prototype 应遵循该术语表。
+
+以后新增 Prototype 时，以下所有 User-visible Copy 必须同时提供 `en` 与 `zh-CN`：
+
+```text
+Title
+Description
+Controls
+Debug View
+Stats
+Status Message
+Recommended Experiment
+Teaching Explanation
+Error Message
+Tooltip / aria-label
+```
+
+以下内容保持英文：
+
+```text
+Source Code
+Identifiers
+Function Names
+Variable Names
+Algorithm Pseudocode / Formula
+Code Comments
+```
+
+中文教学正文第一次出现重要术语时使用：
+
+```text
+中文名称（English Term）
+```
+
+后续可使用简化中文名称。
