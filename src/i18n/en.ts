@@ -1,4 +1,6 @@
+import { rollbackEn } from "./rollback";
 export const en = {
+  ...rollbackEn,
   "common.language": "Language",
   "common.chinese": "中文",
   "common.english": "EN",

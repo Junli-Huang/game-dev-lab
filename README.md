@@ -36,3 +36,11 @@ Create a folder under `src/prototypes/`, implement its metadata and lifecycle, t
 ## GitHub Pages
 
 Pushes to `main` build and deploy automatically to <https://junli-huang.github.io/game-dev-lab/>.
+
+## Rollback Netcode Lab
+
+New: **006 — Rollback Netcode Lab V0.1** compares Delay Based, Prediction and Rollback with a local fake network, a frame timeline and correction ghosts.
+
+[Prototype README](src/prototypes/rollback-netcode/README.md) · `#/prototype/rollback-netcode`
+
+`npm test`

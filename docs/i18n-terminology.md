@@ -22,7 +22,13 @@ Game Dev Lab keeps code, formulas and algorithm identifiers in English. In Simpl
 | Solver Iteration | 求解器迭代 |
 | Constraint Pass | 约束迭代轮次（Constraint Pass） |
 | Constraint Error | 约束误差 |
-| Prediction | 位置预测 |
+| Prediction (physics) | 位置预测 |
+| Input Prediction (networking) | 输入预测 |
+| Rollback | 回滚 |
+| Re-simulation | 重新模拟 / 重演 |
+| Deterministic Simulation | 确定性模拟 |
+| Input History / State History | 输入历史 / 状态历史 |
+| Rollback Depth | 回滚深度 |
 | Frame Step | 帧步进 |
 | Solver Step | 求解器步进 |
 | Position-Based Dynamics | 基于位置的动力学（PBD） |

@@ -1,0 +1,28 @@
+.rb-page .prototype-heading h1{font-size:clamp(2.5rem,6vw,4.7rem)}
+.rb-box{margin:18px 0;padding:22px;background:#101a2c;border:1px solid #2c3d5b;border-radius:14px}
+.rb-box h2{margin:0 0 12px;font-size:1.2rem}.rb-box h3{font-size:1rem}
+.rb-page p{color:#afbed6}.rb-page .rb-muted{color:#9badc8;font-size:.85rem}
+.rb-modes,.rb-presets,.rb-actions,.rb-input{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.rb-modes button,.rb-presets button,.rb-actions button{background:#1a2b43;color:#c8d7eb;border:1px solid #344963}
+.rb-modes button.active{background:#24564f;color:#bdffed;border-color:#6ee7c7}
+.rb-sliders{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.rb-sliders label{display:grid;grid-template-columns:1fr auto;gap:8px;color:#c3d0e3}
+.rb-sliders input{grid-column:1/-1;width:100%;accent-color:#6ee7c7}
+.rb-pattern{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.rb-pattern select{max-width:100%;background:#0c1627;color:#eaf1ff;border:1px solid #435879;border-radius:8px;padding:9px;font:inherit}
+.rb-actions{margin-top:20px}.rb-actions #rb-pause{background:#6ee7c7;color:#08211c}.rb-actions button:disabled{opacity:.4;cursor:default}
+#rb-status{color:#ffcf76;font-size:.9rem}.rb-input p{flex:1;min-width:220px;font-size:.9rem}.rb-input button{touch-action:none;user-select:none}
+.rb-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0}
+.rb-stats>div{padding:12px;background:#0c1526;border:1px solid #23364e;border-radius:8px}
+.rb-stats dt{font-size:.75rem;color:#9dafca}.rb-stats dd{margin:4px 0 0;font-size:1.35rem;color:#bffced;font-variant-numeric:tabular-nums}
+.rb-inspector{grid-template-columns:repeat(4,minmax(0,1fr))}.rb-inspector dd{font-size:1rem}
+.rb-timeline{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:5px}
+.rb-frame{display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-height:87px;min-width:0;padding:6px 2px;border-radius:5px;border:1px solid #38735e;background:#14342e;color:#b5f4d6;font-size:.65rem}
+.rb-frame b{font-size:.7rem}.rb-frame span{white-space:normal;min-height:22px}.rb-frame strong{font-size:1rem}
+.rb-frame.predicted{background:#342e18;border-color:#887644;color:#ffdf89}.rb-frame.mismatch{background:#3e2330;border-color:#b36579;color:#ffb9c8}
+.rb-frame.replay-start{border-top:4px solid #a49aff}.rb-frame[aria-pressed=true]{outline:2px solid white;outline-offset:1px}
+.rb-page button:focus-visible,.rb-page select:focus-visible,.rb-page canvas:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media(max-width:800px){.rb-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.rb-timeline{grid-template-columns:repeat(8,minmax(0,1fr))}}
+@media(max-width:520px){.rb-box{padding:14px}.rb-sliders{grid-template-columns:1fr;gap:12px}.rb-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.rb-modes button{flex:1;font-size:.8rem;padding:10px 6px}.rb-timeline{grid-template-columns:repeat(4,minmax(0,1fr))}.rb-frame{min-height:70px}.rb-actions button{padding:10px}}
+.rb-page .explanation section{min-width:0;overflow-wrap:anywhere}
+.rb-timeline>p{grid-column:1/-1}
+@media(max-width:520px){.rb-input p{flex-basis:100%;margin-bottom:0}.rb-input button{flex:1}}
