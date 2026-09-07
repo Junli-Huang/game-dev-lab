@@ -671,6 +671,36 @@ No Rule Editor / 3D
 
 ---
 
+## 006 — Rollback Netcode Lab
+
+- **Status:** Prototyped / Prototype
+- **Version:** V0.1 · 2026-09-07
+- **Domain:** Networking / Simulation
+- **Prototype:** `src/prototypes/rollback-netcode`
+- **Route:** `#/prototype/rollback-netcode`
+
+核心链路：远端输入未到 → 使用最近已知输入预测 → 输入迟到并核对 →
+恢复对应帧开始前的状态 → 重演保存的输入 → 修正当前位置。
+
+已完成：
+
+- Delay Based / Prediction / Rollback 三模式及一键实验预设。
+- 60 Hz 固定逻辑帧、独立网络时钟、整数位置的确定性模拟。
+- 单向延迟、抖动 / 乱序到包、实验性丢包与可选远端脚本。
+- 300 帧输入历史 / 301 个边界快照；Delay 丢包积压满后明确停止。
+- 最近 32 帧时间轴：C / P / M / R / ↻，可点击检查输入与快照。
+- 修正残影、回滚深度、预测统计、连续确认帧及最大已收帧号。
+- Pause / Step / Reset，键盘及触屏输入，中英文切换保留模拟状态。
+- 核心回归测试及原型 README。
+
+统计与时间语义：`stateHistory[N]` 是第 N 帧开始前的状态，Current Frame
+是下一待执行帧。单步前进一个网络逻辑刻；Delay 等待时游戏帧可以不推进。
+丢包没有重传，连续确认帧停在缺口前；不把最大已收到帧号误当作连续确认帧。
+
+版本记录：V0.1 首次实现，不包含真实联网、战斗、服务器权威或可靠传输。
+
+---
+
 # Future Candidate Pool
 
 以下只是候选池，不代表开发顺序。

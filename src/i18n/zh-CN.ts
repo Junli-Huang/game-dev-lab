@@ -1,6 +1,8 @@
+import { rollbackZh } from "./rollback";
 import type { MessageKey } from "./en";
 
 export const zhCN: Record<MessageKey, string> = {
+  ...rollbackZh,
   "common.language":"语言","common.chinese":"中文","common.english":"EN","common.back":"← 返回全部原型","common.pause":"暂停","common.resume":"继续","common.on":"开启","common.off":"关闭","common.reset":"重置","common.restart":"重新开始","common.autoRun":"自动运行","common.pauseAuto":"暂停自动运行","common.debugView":"调试视图","common.recommended":"推荐实验","common.whatYouSee":"你看到的是什么","common.coreIdea":"核心思路","common.minimalAlgorithm":"最小算法","common.implementation":"实现方式","common.codeStructure":"代码结构","common.nextExperiments":"后续实验","common.commonAlternatives":"常见替代方案","common.whereUsed":"游戏中的应用","common.parameters":"可调参数","common.agents":"单位","common.speed":"速度",
   "home.eyebrow":"游戏开发游乐场 / 技术图谱","home.copy":"从可观察现象出发，通过算法、可读代码和交互原型探索游戏真正如何运作。","home.search":"搜索水体、Shader、寻路、噪声……","home.surprise":"随机探索","home.explore":"探索技术图谱","home.prototypes":"交互原型","home.empty":"没有匹配的原型。","home.footer":"为最小、真实、易于观察的实验而构建。","home.all":"全部","home.countOne":"1 个实验","home.countMany":"{count} 个实验","home.difficulty":"难度",
   "category.world":"世界与模拟","category.rendering":"渲染","category.physics":"物理","category.ai":"AI","category.gameplay":"玩法","category.procedural":"程序化生成","category.networking":"网络","category.audio":"音频","category.tools":"工具","category.other":"其他","status.prototype":"原型","status.polished":"已打磨",

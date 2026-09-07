@@ -35,7 +35,7 @@ export function setLanguage(next: Language) {
 }
 export function subscribeLanguageChange(listener: () => void) { listeners.add(listener); return () => listeners.delete(listener); }
 export function localizeMetadata(item: PrototypeMetadata): PrototypeMetadata {
-  const prefixById: Record<string, string> = { "bouncing-ball": "bouncing", "verlet-rope": "rope", "flow-field": "flow", "sdf-playground": "sdf", "crowd-steering": "crowd", "constraint-generation": "constraint" };
+  const prefixById: Record<string, string> = { "rollback-netcode": "rollback", "bouncing-ball": "bouncing", "verlet-rope": "rope", "flow-field": "flow", "sdf-playground": "sdf", "crowd-steering": "crowd", "constraint-generation": "constraint" };
   const prefix = prefixById[item.id];
   const categoryName = item.category === "World & Simulation" ? "world" : item.category === "Procedural Generation" ? "procedural" : item.category.toLowerCase();
   return { ...item, title: prefix ? t(`metadata.${prefix}.title` as MessageKey) : item.title, description: prefix ? t(`metadata.${prefix}.description` as MessageKey) : item.description, category: t(`category.${categoryName}` as MessageKey) as PrototypeMetadata["category"] };

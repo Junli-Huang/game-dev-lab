@@ -39,3 +39,11 @@ npm run dev
 ## GitHub Pages
 
 推送到 `main` 后会自动构建并部署至 <https://junli-huang.github.io/game-dev-lab/>。
+
+## 回滚网络实验室
+
+新增 **006 — Rollback Netcode Lab V0.1**：通过本地网络模拟、时间轴和修正残影，对比等待输入、输入预测与回滚。
+
+[Prototype README](src/prototypes/rollback-netcode/README.md) · `#/prototype/rollback-netcode`
+
+`npm test`
