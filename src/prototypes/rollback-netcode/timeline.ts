@@ -18,10 +18,11 @@ export function renderTimeline(root: HTMLElement, lab: RollbackLab, selected?: n
       button.innerHTML = `<b>${i.frame}</b><span></span><strong></strong>`;
       root.append(button);
     }
+    const inLastRollback = !!lab.lastRollback && lab.lastRollback.from <= i.frame && i.frame <= lab.lastRollback.to;
     // Retain nodes while live stats update, preserving keyboard focus and clicks.
-    button.className = `rb-frame ${i.mismatch ? 'mismatch' : i.remote === undefined ? 'predicted' : 'confirmed'} ${i.rollbackStart ? 'replay-start' : ''}`;
+    button.className = `rb-frame ${i.mismatch ? 'mismatch' : i.remote === undefined ? 'predicted' : 'confirmed'} ${i.rollbackStart ? 'replay-start' : ''} ${inLastRollback ? 'last-rollback' : ''}`;
     button.setAttribute('aria-pressed', String(selected === i.frame));
-    button.setAttribute('aria-label', `${t('rollback.frameLabel')} ${i.frame}: ${markers}`);
+    button.setAttribute('aria-label', `${t('rollback.frameLabel')} ${i.frame}: ${markers}${inLastRollback ? ` · ${t('rollback.lastReplay')}` : ''}`);
     button.querySelector('span')!.textContent = markers;
     button.querySelector('strong')!.textContent = arrow(i.usedRemote);
   }

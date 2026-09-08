@@ -42,7 +42,7 @@ npm run dev
 
 ## 回滚网络实验室
 
-新增 **006 — Rollback Netcode Lab V0.1**：通过本地网络模拟、时间轴和修正残影，对比等待输入、输入预测与回滚。
+新增 **006 — Rollback Netcode Lab V0.1.1**：通过本地网络模拟、时间轴和修正残影，对比等待输入、输入预测与回滚。
 
 [Prototype README](src/prototypes/rollback-netcode/README.md) · `#/prototype/rollback-netcode`
 

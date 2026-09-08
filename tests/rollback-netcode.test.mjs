@@ -97,3 +97,50 @@ test('New experiment resets all state and seeded network while retaining selecte
   assert.equal(reset.settings.latency, 200);
   run(reset, 100); assert.deepEqual(reset.state, old.state); assert.deepEqual(reset.stats, old.stats);
 });
+
+test('Network Tick != Simulation Frame: Step Tick advances source time while Delay waits', () => {
+  const lab = create({ mode: 'delay', latency: 200 });
+  for (let tick = 1; tick <= 12; tick++) {
+    lab.tick(0);
+    assert.equal(lab.generatedFrame, tick); // Completed input/network ticks, not frame ID.
+    assert.equal(lab.state.frame, 0); // Next simulation frame stays at zero.
+    assert.equal(lab.missingRemoteInputs, 0); // Buffered, not yet simulated, inputs are excluded.
+    assert.equal(lab.speculativeDepth, 0);
+  }
+  lab.tick(0);
+  assert.equal(lab.generatedFrame, 13);
+  assert.equal(lab.state.frame, 1);
+});
+test('Speculative Depth measures distance beyond the contiguous confirmed frontier', () => {
+  const lab = create({ latency: 200 });
+  for (let tick = 1; tick <= 100; tick++) {
+    lab.tick(0);
+    assert.equal(lab.speculativeDepth, Math.max(0, lab.state.frame - (lab.confirmedFrame + 1)));
+    assert.equal(lab.speculativeDepth, Math.min(tick, 12));
+    assert.equal(lab.missingRemoteInputs, lab.speculativeDepth); // Equal only for this loss/jitter-free run.
+  }
+  const delay = create({ mode: 'delay', latency: 0 });
+  run(delay, 20); delay.settings.latency = 500; run(delay, 10);
+  delay.settings.latency = 0; run(delay, 40);
+  assert.ok(delay.confirmedFrame + 1 > delay.state.frame);
+  assert.equal(delay.speculativeDepth, 0); // Confirmed future inputs must not create a negative depth.
+});
+test('Loss separates bounded Missing Remote Inputs from Speculative Depth', () => {
+  const lab = create({ latency: 200, loss: 20 }); run(lab, 1500);
+  const missing = [...lab.history.inputs.values()].filter(i => i.frame < lab.state.frame && i.remote === undefined).length;
+  assert.equal(lab.missingRemoteInputs, missing);
+  assert.ok(missing > 0 && missing <= HISTORY_LIMIT);
+  assert.ok(lab.speculativeDepth > HISTORY_LIMIT);
+  assert.ok(lab.speculativeDepth > lab.missingRemoteInputs);
+});
+test('Last Rollback Range replaces the latest event but preserves historical markers', () => {
+  const lab = create({ latency: 200, pattern: 'fast' }); run(lab, 13);
+  assert.deepEqual(lab.lastRollback, { from: 0, to: 11 });
+  run(lab, 30);
+  assert.deepEqual(lab.lastRollback, { from: 30, to: 41 });
+  assert.equal(lab.stats.lastDepth, lab.lastRollback.to - lab.lastRollback.from + 1);
+  assert.equal(lab.stats.correction, 24);
+  assert.equal(lab.history.inputs.get(0).rollbackStart, true);
+  assert.equal(lab.history.inputs.get(11).resimulated, true);
+  assert.ok(11 < lab.lastRollback.from); // Historical participation is not the last range.
+});

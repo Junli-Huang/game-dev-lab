@@ -1,4 +1,4 @@
-# 006 — Rollback Netcode Lab · V0.1
+# 006 — Rollback Netcode Lab · V0.1.1
 
 Status: Prototype / Prototyped. Route: `#/prototype/rollback-netcode`.
 
@@ -28,7 +28,7 @@ Use the A–D preset buttons, which reset the experiment and disable loss and ji
 | B | Delay, 200 ms | Initially wait; A input is buffered by about 12 ticks |
 | C | Prediction, 200 ms | Continuous motion, original prediction mismatches, no state correction |
 | D | Rollback, 200 ms | M / R / ↻ timeline markers, correction ghost and replay depth |
-| E | Pause, then Step | Frozen clocks between clicks; inspect input arrival and replay one tick at a time |
+| E | Pause, then Step Tick | Frozen clocks between clicks; inspect input arrival and replay one tick at a time |
 
 B–D use the fast B script for frequent transitions. Default B input is right 120,
 idle 30, left 120, idle 30 frames. Fast mode uses 30 / 15 / 30 / 15. Forced left,
@@ -54,7 +54,7 @@ Render reads current state; replay never renders intermediate states
 The input source/network clock keeps ticking when Delay simulation stalls, preventing
 an input-delivery deadlock. At most one new game frame runs per tick, preserving the
 Delay buffer rather than instantly catching up. Pause freezes network, simulation
-and ghost age. **Step advances one 1/60 s source/network tick**; Delay can advance zero
+and ghost age. **Step Tick advances one 1/60 s source/network tick**; Delay can advance zero
 game frames if input is still missing. This necessary distinction is also in the UI.
 
 `requestAnimationFrame` accumulates elapsed time; it never supplies a variable gameplay
@@ -82,7 +82,7 @@ clamped to x = 20…880. A and B occupy separate visual lanes and do not collide
 
 - **Contiguous confirmed frame:** largest frame for which every input from 0 has arrived;
   starts at −1, remains behind a permanent loss gap. Highest received frame is separate.
-- **Unconfirmed simulated frames:** retained simulated frames still missing real input;
+- **Missing Remote Inputs:** retained simulated frames still missing real input;
   not `currentFrame - confirmedFrame`, which would overcount with out-of-order delivery.
 - **Prediction count / correct / wrong:** count each original prediction once; assess
   once on receipt. Replay does not inflate counters. Accuracy = correct / (correct + wrong),
@@ -91,6 +91,10 @@ clamped to x = 20…880. A and B occupy separate visual lanes and do not collide
   frame. After an earlier replay this can differ from the original prediction used for stats.
 - Timeline displays the latest 32 simulated frames. C/P identifies confirmation, M the
   original mismatch, R any replay start, ↻ any re-simulated frame. Markers can coexist.
+  R and ↻ are historical markers, not necessarily the latest event. The separate
+  double underline / striped `last-rollback` range uses `lastRollback.from <= frame <=
+  lastRollback.to`. The Last Rollback event panel shows from, to, depth and correction;
+  before any event it displays —. Older history markers remain when this highlight moves.
   Select a frame to inspect original vs used input, generation/delivery times, and the
   latest saved pre-frame state. Selection remains until its history record expires.
 - Simulation FPS measures new game frames per wall-clock second, excluding replay work.
@@ -132,3 +136,49 @@ Next versions may add combat (V0.2), determinism failures (V0.3), then real peer
 Run `npm test` for the DOM-free acceptance/regression tests, then `npm run build`.
 Browser checks cover pause/step, timeline inspection, keyboard, language-state
 preservation, mobile overflow and route cleanup.
+
+## V0.1.1 — Network Tick vs Simulation Frame
+
+**Network Tick = `generatedFrame`**, the number of executed source/network ticks,
+starting at 0. It is not the latest generated frame ID (which is `generatedFrame - 1`).
+**Simulation Frame = `state.frame`**, the next frame to simulate, also starting at 0.
+Network/input time can advance while the simulation waits. Pause freezes both clocks.
+In Delay with 200 ms latency, Step Tick can change (5, 0) → (6, 0), then (12, 0) → (13, 1).
+If the history buffer is full, Step Tick is disabled until Reset.
+
+## Speculative Depth
+
+How far simulation has advanced beyond the contiguous confirmed remote-input frontier:
+
+```text
+speculativeDepth = max(0, state.frame - (confirmedFrame + 1))
+```
+
+For confirmedFrame = 120 and state.frame = 128, depth = 7 (frames 121…127).
+It includes confirmed inputs beyond an earlier missing gap, since the contiguous
+frontier has not passed that gap. With permanent loss, this depth can grow beyond
+300 even after the old missing frame is pruned; it is not a count of retained records.
+It is clamped to zero when the confirmed frontier is ahead of Delay simulation.
+
+## Missing Remote Inputs
+
+Number of retained, previously simulated frames whose real remote input has not arrived:
+
+```text
+frame < state.frame && remote === undefined
+```
+
+Limited to the 300-frame history window; excludes inputs buffered for unsimulated frames.
+It can stay nonzero after packet loss. Unlike Speculative Depth, it counts missing
+records only, not the whole span beyond a contiguous frontier. Both metrics are shown
+separately; the ambiguous `predictedFrames` getter has been removed.
+
+## Packet Loss Limitation
+
+V0.1.1 implements no retransmission or input redundancy. A dropped input may remain
+permanently unknown and stop the contiguous confirmed frame. Production rollback
+netcode commonly combines rollback with redundant recent inputs, retransmission or
+reliable transport. These are explanations only, not new transport mechanisms.
+
+V0.1.1 changes naming, debug metrics, last-event visualization and explanatory copy.
+Simulation, prediction, replay, history pruning, seeded network and ghosts are unchanged.
