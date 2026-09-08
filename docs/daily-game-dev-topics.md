@@ -674,7 +674,7 @@ No Rule Editor / 3D
 ## 006 — Rollback Netcode Lab
 
 - **Status:** Prototyped / Prototype
-- **Version:** V0.1 · 2026-09-07
+- **Version:** V0.1.1 · 2026-09-08
 - **Domain:** Networking / Simulation
 - **Prototype:** `src/prototypes/rollback-netcode`
 - **Route:** `#/prototype/rollback-netcode`
@@ -697,7 +697,13 @@ No Rule Editor / 3D
 是下一待执行帧。单步前进一个网络逻辑刻；Delay 等待时游戏帧可以不推进。
 丢包没有重传，连续确认帧停在缺口前；不把最大已收到帧号误当作连续确认帧。
 
-版本记录：V0.1 首次实现，不包含真实联网、战斗、服务器权威或可靠传输。
+版本记录：
+
+- V0.1 · 2026-09-07：首次实现，不包含真实联网、战斗、服务器权威或可靠传输。
+- V0.1.1 · 2026-09-08：Step Tick / 单步 Tick；双时钟显示使用已执行网络 Tick 数
+  与下一待模拟帧号；拆分 Speculative Depth 与 Missing Remote Inputs；醒目说明
+  丢包无重传 / 输入冗余；历史 R / ↻ 标记与最近回滚范围双下划线区分；新增
+  最近事件详情与 4 项语义回归测试。回滚核心算法不变。
 
 ---
 

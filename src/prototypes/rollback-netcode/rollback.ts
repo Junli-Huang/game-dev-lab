@@ -22,8 +22,11 @@ export class RollbackLab {
     this.network = new FakeNetwork(settings);
     this.history.states.set(0, copyState(this.state));
   }
-  get predictedFrames() {
+  get missingRemoteInputs() {
     return [...this.history.inputs.values()].filter(i => i.frame < this.state.frame && i.remote === undefined).length;
+  }
+  get speculativeDepth() {
+    return Math.max(0, this.state.frame - (this.confirmedFrame + 1));
   }
   // One source/network tick. Delay mode may advance zero game frames while waiting.
   tick(local: Move) {

@@ -29,6 +29,10 @@ Game Dev Lab keeps code, formulas and algorithm identifiers in English. In Simpl
 | Deterministic Simulation | 确定性模拟 |
 | Input History / State History | 输入历史 / 状态历史 |
 | Rollback Depth | 回滚深度 |
+| Network Tick | 网络 Tick |
+| Simulation Frame | 模拟帧 |
+| Speculative Depth | 推测深度 |
+| Missing Remote Inputs | 缺失远端输入数 |
 | Frame Step | 帧步进 |
 | Solver Step | 求解器步进 |
 | Position-Based Dynamics | 基于位置的动力学（PBD） |

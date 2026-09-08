@@ -26,3 +26,11 @@
 .rb-page .explanation section{min-width:0;overflow-wrap:anywhere}
 .rb-timeline>p{grid-column:1/-1}
 @media(max-width:520px){.rb-input p{flex-basis:100%;margin-bottom:0}.rb-input button{flex:1}}
+
+.rb-loss-note{border-left:4px solid #ffcf76;padding:12px 16px;background:#332a1a;border-radius:6px;font-size:.9rem}
+.rb-page .rb-loss-note{color:#ffe0a2}
+.rb-clocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0 0}
+.rb-clocks>div{border:1px solid #416077;border-radius:10px;padding:14px;background:#12243a}
+.rb-clocks dt{color:#afbed6;font-size:.85rem}.rb-clocks dd{margin:0;color:#bffced;font-size:1.8rem;font-variant-numeric:tabular-nums}
+.rb-frame.last-rollback{border-bottom:5px double #e1d8ff;background-image:repeating-linear-gradient(135deg,transparent,transparent 6px,#b9aaff18 6px,#b9aaff18 8px)}
+#rb-event{margin-bottom:14px}
