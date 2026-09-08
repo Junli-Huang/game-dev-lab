@@ -20,6 +20,7 @@ This file is the compact current-state snapshot for ongoing planning and handoff
 | 004 | Crowd Steering | Prototyped | Existing lab prototype |
 | 005 | Constraint Generation | Prototyped | Existing lab prototype |
 | 006 | Rollback Netcode Lab | **Accepted / Stable prototype** | **V0.1.1 · 2026-09-08** |
+| 007 | Behavior Tree vs Utility AI Lab | **Prototyped / Acceptance checks passed** | **V0.1 · 2026-09-08** |
 
 ## 006 — Rollback Netcode Lab
 
@@ -105,6 +106,27 @@ Attack
 
 Do **not** implement V0.2 until it is explicitly resumed.
 
+## 007 — Behavior Tree vs Utility AI Lab
+
+**V0.1 implementation complete; acceptance checks passed.** User review remains available;
+this does not imply approval to start V0.2.
+
+- Same immutable WorldState and six shared Action IDs for both decision methods.
+- Fixed BT with Selector / Sequence / Condition / Action, configured thresholds,
+  real visit order, returned statuses, skipped nodes and selected decision path.
+- Utility multiplication, raw inputs / normalized considerations / final scores,
+  stable definition-order tie break and full-precision selection.
+- Six presets, including stable Attack vs Eat divergence; sliders refresh both results.
+- Why This Decision, bilingual UI, Reset and expandable score details.
+- No continuous simulation or action execution. World values change only through controls.
+- 10 new core tests plus existing rollback regressions; browser acceptance and production build.
+
+Route: `#/prototype/behavior-tree-utility`.
+Implementation notes: `src/prototypes/behavior-tree-utility/README.md`.
+
+**Next version is deferred.** Do not implement V0.2 continuous action execution until
+explicitly requested. Rollback 006 remains accepted at V0.1.1; its V0.2 remains deferred.
+
 ## Source-of-truth documents
 
 - Project/topic history: `docs/daily-game-dev-topics.md`
@@ -116,4 +138,4 @@ Do **not** implement V0.2 until it is explicitly resumed.
 
 No active development task is assigned to `006`.
 
-Choose the next independent game-development technique for the lab, or resume a deferred prototype only when explicitly requested.
+007 V0.1 is implemented and ready for user exploration. Wait for a new requirement; do not automatically continue either prototype into V0.2.

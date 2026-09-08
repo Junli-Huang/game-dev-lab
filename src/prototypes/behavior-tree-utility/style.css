@@ -1,0 +1,23 @@
+.ai-page .prototype-heading h1{font-size:clamp(2.2rem,5vw,4.6rem);line-height:1.1;max-width:1000px}
+.ai-box{background:#101a2c;border:1px solid #2b3e58;border-radius:14px;padding:22px;margin-bottom:18px;min-width:0}
+.ai-box h2{margin:0 0 12px;font-size:1.3rem}.ai-box h3{font-size:1rem}.ai-page p{color:#afbed6}.ai-hint{font-size:.82rem}
+.ai-controls{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}
+.ai-controls label{display:grid;grid-template-columns:1fr auto;gap:8px;align-content:start;color:#d4e3f3}
+.ai-controls output{color:#6ee7c7;font-variant-numeric:tabular-nums}.ai-controls input{grid-column:1/-1;width:100%;margin:0;accent-color:#6ee7c7}.ai-controls small{grid-column:1/-1;color:#93a7c2;font-size:.72rem}
+.ai-presets{display:flex;flex-wrap:wrap;gap:8px}.ai-presets button{padding:9px 12px;background:#1c2e46;border:1px solid #3a506d;color:#cdddf1;font-size:.85rem}.ai-presets button.active{background:#205349;border-color:#6ee7c7;color:#c8fff2}.ai-presets .ai-divergence{border-color:#b99af8;color:#dfcfff}
+.ai-outcome{padding:16px 20px;border-left:4px solid #6ee7c7;background:#12352e;border-radius:6px}.ai-page .ai-outcome{color:#bffced}.ai-page .ai-outcome.different{border-color:#c0a3ff;background:#2b2344;color:#e0ceff}
+.ai-comparison,.ai-reasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}.ai-reasons>div{min-width:0}
+.ai-choice{padding:12px 16px;background:#0a1424;border-radius:8px;color:#9fb3d0;font-size:.8rem}.ai-choice strong{display:block;color:#6ee7c7;font-size:1.6rem;margin-top:2px}
+.ai-tree{list-style:none;padding:0;margin:0;font-size:.8rem}.ai-node{margin:3px 0 3px calc(var(--depth)*12px);padding:6px 5px;border-left:2px solid #344966;display:flex;align-items:center;gap:7px;border-radius:0 5px 5px 0;min-height:42px}
+.ai-order{width:18px;flex:none;color:#829ab8;font-size:.72rem;font-variant-numeric:tabular-nums}.ai-node-copy{flex:1;min-width:0}.ai-node-copy strong{font-weight:600}.ai-node small{display:block;font-size:.66rem;color:#93a7c2}.ai-node-status{font-size:.64rem;flex-shrink:0}
+.ai-node.success{border-color:#5ea892;color:#a8efcf}.ai-node.failure{border-color:#ce7b90;color:#f1aebc}.ai-node.not-evaluated{color:#8b9bb5;border-left-style:dashed}.ai-node.selected{background:#194237;outline:1px solid #6ee7c7}
+.ai-path{padding:12px;background:#0a1424;border-radius:8px;font-size:.85rem;overflow-wrap:anywhere}
+.ai-score{border:1px solid #30465f;background:#101e32;border-radius:9px;margin:10px 0;overflow:hidden}.ai-score.selected{border-color:#6ee7c7}
+.ai-score summary{cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:5px 12px;padding:13px;list-style:none}.ai-score summary::-webkit-details-marker{display:none}.ai-score summary strong:before{content:'▸ ';color:#8da7c3}.ai-score[open] summary strong:before{content:'▾ '}.ai-score summary small{color:#6ee7c7;font-size:.7rem}.ai-score summary b{font-variant-numeric:tabular-nums;color:#bffced}
+.ai-score-track{height:6px;background:#233a54;border-radius:4px;grid-column:1/-1;overflow:hidden}.ai-score-track i{display:block;height:100%;background:#6599d5}.ai-score.selected .ai-score-track i{background:#6ee7c7}
+.ai-factors{padding:0 13px 10px;font-size:.76rem;border-top:1px solid #30465f}.ai-factors table{width:100%;border-collapse:collapse;table-layout:fixed}.ai-factors th,.ai-factors td{padding:7px 3px;text-align:left;border-bottom:1px solid #2b3b50;overflow-wrap:anywhere;vertical-align:top}.ai-factors th:nth-child(2){width:17%}.ai-factors th:nth-child(3){width:48%}.ai-factors thead{color:#8aa4c4}.ai-factors code{font-size:.7rem}
+.ai-page code{color:#bffced;overflow-wrap:anywhere}.ai-reasons{font-size:.9rem}.ai-reasons li{margin-bottom:7px}.ai-page .explanation section{min-width:0;overflow-wrap:anywhere}
+.ai-page button:focus-visible,.ai-page input:focus-visible,.ai-page summary:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media(max-width:900px){.ai-controls{grid-template-columns:repeat(3,minmax(0,1fr))}.ai-node{margin-left:calc(var(--depth)*8px)}.ai-node-status{max-width:58px}}
+@media(max-width:700px){.ai-comparison,.ai-reasons{grid-template-columns:1fr}.ai-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.ai-box{padding:16px}.ai-node{margin-left:calc(var(--depth)*10px)}.ai-node-status{max-width:none}}
+@media(max-width:380px){.ai-node{margin-left:calc(var(--depth)*7px)}.ai-node-status{max-width:56px}}

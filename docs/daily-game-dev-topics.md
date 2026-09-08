@@ -707,6 +707,27 @@ No Rule Editor / 3D
 
 ---
 
+## 007 — Behavior Tree vs Utility AI Lab
+
+- **Status:** Prototyped / Acceptance checks passed
+- **Version:** V0.1 · 2026-09-08
+- **Domain:** AI / Decision Making
+- **Prototype:** `src/prototypes/behavior-tree-utility`
+- **Route:** `#/prototype/behavior-tree-utility`
+
+核心对比：同一份 World State + 同一组 Action → 行为树结构优先级 vs 效用评分偏好。
+
+已实现：Selector / Sequence / Condition / Action、短路与访问顺序、四种节点状态、
+决策路径；六种行为的乘法评分、原始输入 / 归一化 / 最终效用、稳定同分规则；
+六个预设与稳定的 Attack / Eat 分歧；滑块即时刷新、双语说明与 Reset。
+
+验收：10 项新增核心测试及浏览器交互检查；不执行行为、不改变游戏状态、不做
+Blackboard / 编辑器 / 连续模拟。007 V0.2 连续执行暂缓，须明确提出后再开发。
+
+版本记录：V0.1 首次实现静态共享状态下的决策与 Debug 对比。
+
+---
+
 # Future Candidate Pool
 
 以下只是候选池，不代表开发顺序。
