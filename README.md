@@ -50,3 +50,9 @@ New: **006 — Rollback Netcode Lab V0.1.1** compares Delay Based, Prediction an
 Compare structured tree priorities with utility scores using the same world state. Includes live traces, score breakdowns and divergence presets.
 
 [Prototype README](src/prototypes/behavior-tree-utility/README.md) · `#/prototype/behavior-tree-utility`
+
+## 008 — Cellular Material Lab V0.1
+
+Five materials, seeded fire, continuous painting, real rule traces and update-order experiments.
+
+[Open / 打开实验](https://junli-huang.github.io/game-dev-lab/#/prototype/cellular-material) · [Implementation notes](src/prototypes/cellular-material/README.md)

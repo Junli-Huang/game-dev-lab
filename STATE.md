@@ -21,6 +21,7 @@ This file is the compact current-state snapshot for ongoing planning and handoff
 | 005 | Constraint Generation | Prototyped | Existing lab prototype |
 | 006 | Rollback Netcode Lab | **Accepted / Stable prototype** | **V0.1.1 · 2026-09-08** |
 | 007 | Behavior Tree vs Utility AI Lab | **Prototyped / Acceptance checks passed** | **V0.1 · 2026-09-08** |
+| 008 | Cellular Material Lab | **Prototyped / Acceptance checks passed** | **V0.1 · 2026-09-08** |
 
 ## 006 — Rollback Netcode Lab
 
@@ -127,6 +128,15 @@ Implementation notes: `src/prototypes/behavior-tree-utility/README.md`.
 **Next version is deferred.** Do not implement V0.2 continuous action execution until
 explicitly requested. Rollback 006 remains accepted at V0.1.1; its V0.2 remains deferred.
 
+## 008 — Cellular Material Lab
+
+V0.1 implemented: five materials, seeded fire, 30 Hz in-place simulation, painting,
+five presets, pause/step/reset, real rule traces and neighbor inspection. Includes
+explicit top-down repeated-update bug and fixed-left/alternating comparisons.
+12 new core tests and browser acceptance passed; all 34 repository tests pass.
+Route: `#/prototype/cellular-material`. See its prototype README for semantics.
+V0.2 is deferred until explicitly requested.
+
 ## Source-of-truth documents
 
 - Project/topic history: `docs/daily-game-dev-topics.md`
@@ -138,4 +148,4 @@ explicitly requested. Rollback 006 remains accepted at V0.1.1; its V0.2 remains 
 
 No active development task is assigned to `006`.
 
-007 V0.1 is implemented and ready for user exploration. Wait for a new requirement; do not automatically continue either prototype into V0.2.
+007 and 008 V0.1 are implemented and ready for exploration. Wait for a new requirement; do not automatically continue any prototype into V0.2.

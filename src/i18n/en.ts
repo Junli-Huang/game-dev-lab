@@ -1,6 +1,8 @@
+import { cellularEn } from "./cellular";
 import { decisionEn } from "./decision";
 import { rollbackEn } from "./rollback";
 export const en = {
+  ...cellularEn,
   ...decisionEn,
   ...rollbackEn,
   "common.language": "Language",
