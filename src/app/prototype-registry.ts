@@ -1,3 +1,4 @@
+import { cellularMaterial } from "../prototypes/cellular-material";
 import { behaviorTreeUtility } from "../prototypes/behavior-tree-utility";
 import { rollbackNetcode } from "../prototypes/rollback-netcode";
 import type { PrototypeDefinition, PrototypeMetadata } from "./types";
@@ -8,7 +9,7 @@ import { sdfPlayground } from "../prototypes/sdf-playground";
 import { crowdSteering } from "../prototypes/crowd-steering";
 import { constraintGeneration } from "../prototypes/constraint-generation";
 
-export const prototypes: PrototypeDefinition[] = [behaviorTreeUtility, rollbackNetcode, constraintGeneration, crowdSteering, sdfPlayground, flowField, verletRope, bouncingBall];
+export const prototypes: PrototypeDefinition[] = [cellularMaterial, behaviorTreeUtility, rollbackNetcode, constraintGeneration, crowdSteering, sdfPlayground, flowField, verletRope, bouncingBall];
 
 export function findPrototype(id: string) { return prototypes.find((item) => item.metadata.id === id); }
 export function searchPrototypes(query: string, category = "All"): PrototypeMetadata[] {

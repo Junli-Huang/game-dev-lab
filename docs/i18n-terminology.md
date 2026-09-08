@@ -50,3 +50,15 @@ Game Dev Lab keeps code, formulas and algorithm identifiers in English. In Simpl
 ## Development Rule
 
 Every new user-visible string must have both `en` and `zh-CN` entries. Translation keys use semantic namespaces such as `common.*`, `home.*`, and a Prototype namespace. Missing Simplified Chinese text falls back to English; algorithms and Simulation State must never branch on UI language.
+
+### Cellular Material Lab
+
+| English | 中文 |
+| --- | --- |
+| Cellular Material | 元胞材料 |
+| In-place Update | 原地更新 |
+| Double Buffer | 双缓冲 |
+| Rule Trace | 规则追踪 |
+| Scan Order | 扫描顺序 |
+| Directional Bias | 方向偏置 |
+| Ignition | 点燃 |

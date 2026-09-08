@@ -1,8 +1,10 @@
+import { cellularZh } from "./cellular";
 import { decisionZh } from "./decision";
 import { rollbackZh } from "./rollback";
 import type { MessageKey } from "./en";
 
 export const zhCN: Record<MessageKey, string> = {
+  ...cellularZh,
   ...decisionZh,
   ...rollbackZh,
   "common.language":"语言","common.chinese":"中文","common.english":"EN","common.back":"← 返回全部原型","common.pause":"暂停","common.resume":"继续","common.on":"开启","common.off":"关闭","common.reset":"重置","common.restart":"重新开始","common.autoRun":"自动运行","common.pauseAuto":"暂停自动运行","common.debugView":"调试视图","common.recommended":"推荐实验","common.whatYouSee":"你看到的是什么","common.coreIdea":"核心思路","common.minimalAlgorithm":"最小算法","common.implementation":"实现方式","common.codeStructure":"代码结构","common.nextExperiments":"后续实验","common.commonAlternatives":"常见替代方案","common.whereUsed":"游戏中的应用","common.parameters":"可调参数","common.agents":"单位","common.speed":"速度",

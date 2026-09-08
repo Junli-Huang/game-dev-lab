@@ -53,3 +53,9 @@ npm run dev
 用同一份世界状态对比行为树结构优先级与效用评分，观察真实执行路径、分数拆解及稳定的决策分歧。
 
 [Prototype README](src/prototypes/behavior-tree-utility/README.md) · `#/prototype/behavior-tree-utility`
+
+## 008 — Cellular Material Lab V0.1
+
+五种材料、确定性火焰、连续绘制、真实规则追踪，以及更新顺序和方向偏置实验。
+
+[Open / 打开实验](https://junli-huang.github.io/game-dev-lab/#/prototype/cellular-material) · [Implementation notes](src/prototypes/cellular-material/README.md)
