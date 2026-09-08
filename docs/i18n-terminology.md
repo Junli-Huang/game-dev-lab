@@ -38,6 +38,14 @@ Game Dev Lab keeps code, formulas and algorithm identifiers in English. In Simpl
 | Position-Based Dynamics | 基于位置的动力学（PBD） |
 | Flow Field | 流场（Flow Field） |
 | Signed Distance Field | 有符号距离场（SDF） |
+| Behavior Tree | 行为树 |
+| Utility AI | 效用 AI |
+| Selector | 选择器 |
+| Sequence | 序列 |
+| Consideration | 考量因素 |
+| Short-circuit Evaluation | 短路求值 |
+| Not Evaluated | 未评估（不等于失败） |
+| World State | 世界状态 |
 
 ## Development Rule
 

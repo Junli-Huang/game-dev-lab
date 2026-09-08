@@ -44,3 +44,9 @@ New: **006 — Rollback Netcode Lab V0.1.1** compares Delay Based, Prediction an
 [Prototype README](src/prototypes/rollback-netcode/README.md) · `#/prototype/rollback-netcode`
 
 `npm test`
+
+## 007 — Behavior Tree vs Utility AI Lab V0.1
+
+Compare structured tree priorities with utility scores using the same world state. Includes live traces, score breakdowns and divergence presets.
+
+[Prototype README](src/prototypes/behavior-tree-utility/README.md) · `#/prototype/behavior-tree-utility`

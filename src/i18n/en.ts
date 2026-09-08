@@ -1,5 +1,7 @@
+import { decisionEn } from "./decision";
 import { rollbackEn } from "./rollback";
 export const en = {
+  ...decisionEn,
   ...rollbackEn,
   "common.language": "Language",
   "common.chinese": "中文",

@@ -47,3 +47,9 @@ npm run dev
 [Prototype README](src/prototypes/rollback-netcode/README.md) · `#/prototype/rollback-netcode`
 
 `npm test`
+
+## 007 — Behavior Tree vs Utility AI Lab V0.1
+
+用同一份世界状态对比行为树结构优先级与效用评分，观察真实执行路径、分数拆解及稳定的决策分歧。
+
+[Prototype README](src/prototypes/behavior-tree-utility/README.md) · `#/prototype/behavior-tree-utility`
