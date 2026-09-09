@@ -54,7 +54,7 @@ npm run dev
 
 [Prototype README](src/prototypes/behavior-tree-utility/README.md) · `#/prototype/behavior-tree-utility`
 
-## 008 — Cellular Material Lab V0.1
+## 008 — Cellular Material Lab V0.1.1
 
 五种材料、确定性火焰、连续绘制、真实规则追踪，以及更新顺序和方向偏置实验。
 

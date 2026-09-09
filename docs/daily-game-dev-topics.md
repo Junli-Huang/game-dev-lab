@@ -959,3 +959,7 @@ Code Comments
 已实现并通过验收检查：120×80 网格、Air/Sand/Water/Wood/Fire、固定 30 Hz、种子随机点燃、笔刷和五个预设。正常模式自底向上且每 Tick 最多主动更新一次；错误模式明确关闭移动保护并自顶向下。支持固定左优先与交替策略对比、真实规则追踪、六邻域和统计、中英文切换。新增 12 项核心测试，全库 34 项测试及浏览器交互、移动端检查通过。
 
 详细规则与限制见 `src/prototypes/cellular-material/README.md`。V0.2 暂缓。
+
+## 008 V0.1.1 · 2026-09-09 · implemented / pending review
+
+修复 Water 平底左右周期振荡：沿连续 Air 路径搜索六格内下落出口，优先近处，等距使用原方向策略；每次只横移一格，无出口则 Stay。Debug 增加左右搜索结果与距离。未改变 Sand、Fire、每 Tick 更新保护和教学 Bug 模式。全库 38 项 DOM-free 测试通过，覆盖稳定 200 Tick、逐格到达出口并下落、无出口静止、等距确定性、距离/障碍/边界。等待 Review，不标 Accepted；不引入压力或 V0.2。

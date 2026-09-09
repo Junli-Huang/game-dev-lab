@@ -1,6 +1,6 @@
 # Game Dev Lab — Project State
 
-Last updated: 2026-09-08
+Last updated: 2026-09-09
 
 This file is the compact current-state snapshot for ongoing planning and handoff. Detailed experiment notes remain in `docs/daily-game-dev-topics.md` and each prototype's own README.
 
@@ -21,7 +21,7 @@ This file is the compact current-state snapshot for ongoing planning and handoff
 | 005 | Constraint Generation | Prototyped | Existing lab prototype |
 | 006 | Rollback Netcode Lab | **Accepted / Stable prototype** | **V0.1.1 · 2026-09-08** |
 | 007 | Behavior Tree vs Utility AI Lab | **Prototyped / Acceptance checks passed** | **V0.1 · 2026-09-08** |
-| 008 | Cellular Material Lab | **Prototyped / Acceptance checks passed** | **V0.1 · 2026-09-08** |
+| 008 | Cellular Material Lab | **Implemented / pending review** | **V0.1.1 · 2026-09-09** |
 
 ## 006 — Rollback Netcode Lab
 
@@ -130,12 +130,14 @@ explicitly requested. Rollback 006 remains accepted at V0.1.1; its V0.2 remains 
 
 ## 008 — Cellular Material Lab
 
-V0.1 implemented: five materials, seeded fire, 30 Hz in-place simulation, painting,
-five presets, pause/step/reset, real rule traces and neighbor inspection. Includes
-explicit top-down repeated-update bug and fixed-left/alternating comparisons.
-12 new core tests and browser acceptance passed; all 34 repository tests pass.
+V0.1.1 implemented / pending review. Water searches up to six Air cells for a
+lower opening, takes one horizontal step toward the nearest candidate and stays
+without an opening. Equal distances retain deterministic direction tie-breaking.
+Debug shows actual left/right search distances or No Drop. Stable water is tested
+for another 200 ticks with no movement; nearby-drop tests verify eventual falling.
+All 38 DOM-free tests pass, including unchanged Sand/Fire/guard/bug semantics.
 Route: `#/prototype/cellular-material`. See its prototype README for semantics.
-V0.2 is deferred until explicitly requested.
+This is not yet marked Accepted. V0.2 remains deferred.
 
 ## Source-of-truth documents
 
@@ -148,4 +150,4 @@ V0.2 is deferred until explicitly requested.
 
 No active development task is assigned to `006`.
 
-007 and 008 V0.1 are implemented and ready for exploration. Wait for a new requirement; do not automatically continue any prototype into V0.2.
+007 V0.1 and 008 V0.1.1 are implemented; 008 awaits review. Wait for a new requirement; do not automatically continue any prototype into V0.2.

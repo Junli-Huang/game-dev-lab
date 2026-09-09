@@ -51,7 +51,7 @@ Compare structured tree priorities with utility scores using the same world stat
 
 [Prototype README](src/prototypes/behavior-tree-utility/README.md) · `#/prototype/behavior-tree-utility`
 
-## 008 — Cellular Material Lab V0.1
+## 008 — Cellular Material Lab V0.1.1
 
 Five materials, seeded fire, continuous painting, real rule traces and update-order experiments.
 
