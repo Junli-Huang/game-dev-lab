@@ -1,7 +1,7 @@
 import { t } from '../../i18n';
 import type { MessageKey } from '../../i18n/en';
 import { MATERIALS, MATERIAL_IDS, DIRECTIONS, FIRE_RULES } from './materials';
-import type { World } from './world';
+import type { World, WaterLevelTrace } from './world';
 import { leftFirst } from './movement';
 export const msg = (key: string) => t(key as MessageKey);
 export function renderWorld(canvas: HTMLCanvasElement, world: World, selected: number | undefined, debug: boolean) {
@@ -31,7 +31,17 @@ export function renderDebug(root: HTMLElement, world: World, selected?: number) 
   const trace = world.traces[selected];
   if (!trace) { q('cm-trace').textContent = msg('cell.noTrace'); return; }
   const coords = (i: number) => `(${i % world.width}, ${Math.floor(i / world.width)})`;
-  q('cm-trace').innerHTML = `<p><b>${msg(`cell.${trace.material}`)} · Tick ${trace.tick}</b> · ${coords(trace.from)} → ${coords(trace.to)}</p><ol>${trace.checks.map(c => `<li>${msg(`cell.${c.direction}`)}: ${msg(`cell.${c.result}`)}${c.roll === undefined ? '' : ` · ${msg('cell.roll')}: ${c.roll.toFixed(6)} / ${msg('cell.threshold')}: ${FIRE_RULES.ignitionProbability}`}</li>`).join('')}</ol>${trace.waterSearch ? `<ul>${(['left', 'right'] as const).map(direction => { const distance = trace.waterSearch![direction === 'left' ? 'leftDropDistance' : 'rightDropDistance']; return `<li>${msg(`cell.search${direction === 'left' ? 'Left' : 'Right'}`)}: ${distance === undefined ? msg('cell.noDrop') : `${msg('cell.dropDistance')} ${distance}`}</li>`; }).join('')}</ul>` : ''}<p><b>${msg('cell.chosen')}: ${msg(`cell.${trace.chosen}`)}</b>${trace.life === undefined ? '' : ` · ${msg('cell.life')}: ${trace.life}`}</p>`;
+  q('cm-trace').innerHTML = `<p><b>${msg(`cell.${trace.material}`)} · Tick ${trace.tick}</b> · ${coords(trace.from)} → ${coords(trace.to)}</p><ol>${trace.checks.map(c => `<li>${msg(`cell.${c.direction}`)}: ${msg(`cell.${c.result}`)}${c.roll === undefined ? '' : ` · ${msg('cell.roll')}: ${c.roll.toFixed(6)} / ${msg('cell.threshold')}: ${FIRE_RULES.ignitionProbability}`}</li>`).join('')}</ol>${trace.waterSearch ? `<ul>${(['left', 'right'] as const).map(direction => { const distance = trace.waterSearch![direction === 'left' ? 'leftDropDistance' : 'rightDropDistance']; return `<li>${msg(`cell.search${direction === 'left' ? 'Left' : 'Right'}`)}: ${distance === undefined ? msg('cell.noDrop') : `${msg('cell.dropDistance')} ${distance}`}</li>`; }).join('')}</ul>` : ''}${renderLevelTrace(trace.waterLevel)}<p><b>${msg('cell.chosen')}: ${msg(`cell.${trace.chosen}`)}</b>${trace.life === undefined ? '' : ` · ${msg('cell.life')}: ${trace.life}`}</p>`;
+}
+function renderLevelTrace(trace?: WaterLevelTrace) {
+  if (!trace) return '';
+  const side = (name: 'left' | 'right') => {
+    const candidate = trace[name], observed = trace[name === 'left' ? 'leftObservedSurfaceY' : 'rightObservedSurfaceY'];
+    return `<li>${msg(`cell.${name}`)}: ${candidate
+      ? `${msg('cell.surfaceY')} ${candidate.surfaceY} · ${msg('cell.levelDifference')} ${candidate.surfaceY - trace.currentSurfaceY} · ${msg('cell.levelDistance')} ${candidate.distance}${candidate.dry ? ` · ${msg('cell.dryBank')}` : ''}`
+      : `${msg('cell.noLevel')}${observed === undefined ? '' : ` · ${msg('cell.observedSurface')} ${observed} · ${msg('cell.levelDifference')} ${observed - trace.currentSurfaceY} ≤ 1`}`}</li>`;
+  };
+  return `<section class="cm-level-trace"><h4>${msg('cell.levelSearch')}</h4><p>${msg('cell.surface')}: ${msg(trace.isSurface ? 'cell.yes' : 'cell.no')} · ${msg('cell.surfaceY')}: ${trace.currentSurfaceY}</p>${trace.isSurface ? `<ul>${side('left')}${side('right')}</ul>` : ''}<p>${msg('cell.reason')}: ${msg(`cell.${trace.reason}`)}</p></section>`;
 }
 export function renderStats(root: HTMLElement, world: World) {
   const counts = Object.fromEntries(MATERIAL_IDS.map(id => [id, 0]));

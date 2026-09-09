@@ -1,3 +1,4 @@
+import { findWaterLevelDirection } from './leveling';
 import { DIRECTIONS, type Direction } from './materials';
 import type { World, RuleTrace } from './world';
 export const MOVEMENT_PRIORITY = { sand: ['down', 'diagonal'], water: ['down', 'diagonal'] } as const;
@@ -35,6 +36,10 @@ export function moveMaterial(world: World, index: number): RuleTrace {
     const search = findWaterDropDirection(world, x, y);
     trace.waterSearch = { leftDropDistance: search.leftDropDistance, rightDropDistance: search.rightDropDistance };
     chosen = search.direction;
+    if (!chosen) {
+      trace.waterLevel = findWaterLevelDirection(world, x, y);
+      chosen = trace.waterLevel.direction;
+    }
   }
   if (chosen) {
     const [dx, dy] = DIRECTIONS[chosen], destination = world.index(x + dx, y + dy);
