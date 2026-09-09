@@ -963,3 +963,9 @@ Code Comments
 ## 008 V0.1.1 · 2026-09-09 · implemented / pending review
 
 修复 Water 平底左右周期振荡：沿连续 Air 路径搜索六格内下落出口，优先近处，等距使用原方向策略；每次只横移一格，无出口则 Stay。Debug 增加左右搜索结果与距离。未改变 Sand、Fire、每 Tick 更新保护和教学 Bug 模式。全库 38 项 DOM-free 测试通过，覆盖稳定 200 Tick、逐格到达出口并下落、无出口静止、等距确定性、距离/障碍/边界。等待 Review，不标 Accepted；不引入压力或 V0.2。
+
+## 008 V0.1.2 · 2026-09-09 · implemented / pending review
+
+按修订需求增加 Long-range Surface Equalization：6 格 Drop Search 保留；失败后仅表面水格沿连通水面边界搜索最多 24 列，目标液面至少低 2 格，优先最近、再低处、最后方向策略。实际仍只和相邻 Air 交换一格。障碍与不连通水柱截断，垂直观察也限制 24 格，不模拟压力。
+
+新增“宽水池找平”预设：旧规则完全不动，新规则逐格迁移到 13 格外的低液面。全库 44 项测试覆盖守恒、最终高度差 ≤ 1、之后 200 Tick 静止、Drop 优先、内部格跳过、障碍与确定性；原水箱长时间运行也稳定。Debug 支持中英文液面坐标、差值、距离与原因。README / STATE 同步，等待 Review，未标 Accepted，不继续 V0.2。

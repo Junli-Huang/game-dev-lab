@@ -21,7 +21,7 @@ This file is the compact current-state snapshot for ongoing planning and handoff
 | 005 | Constraint Generation | Prototyped | Existing lab prototype |
 | 006 | Rollback Netcode Lab | **Accepted / Stable prototype** | **V0.1.1 · 2026-09-08** |
 | 007 | Behavior Tree vs Utility AI Lab | **Prototyped / Acceptance checks passed** | **V0.1 · 2026-09-08** |
-| 008 | Cellular Material Lab | **Implemented / pending review** | **V0.1.1 · 2026-09-09** |
+| 008 | Cellular Material Lab | **Implemented / pending review** | **V0.1.2 · 2026-09-09** |
 
 ## 006 — Rollback Netcode Lab
 
@@ -130,14 +130,17 @@ explicitly requested. Rollback 006 remains accepted at V0.1.1; its V0.2 remains 
 
 ## 008 — Cellular Material Lab
 
-V0.1.1 implemented / pending review. Water searches up to six Air cells for a
-lower opening, takes one horizontal step toward the nearest candidate and stays
-without an opening. Equal distances retain deterministic direction tie-breaking.
-Debug shows actual left/right search distances or No Drop. Stable water is tested
-for another 200 ticks with no movement; nearby-drop tests verify eventual falling.
-All 38 DOM-free tests pass, including unchanged Sand/Fire/guard/bug semantics.
-Route: `#/prototype/cellular-material`. See its prototype README for semantics.
-This is not yet marked Accepted. V0.2 remains deferred.
+V0.1.2 implemented / pending review. After unchanged 6-cell Drop Search, surface
+Water can search connected water boundaries up to 24 columns for a surface at
+least 2 rows lower. Every move is one Water/Air swap; nearest/lower/policy ordering
+is deterministic. Obstacles and disconnected columns stop the search.
+
+Wide pool leveling preset demonstrates behavior absent from V0.1.1. All 44 DOM-free
+tests pass, including old-rule immobility, eventual balance, conservation and 200
+additional stable ticks. Debug exposes eligibility, target Y/difference/distance
+and reason. Sand/Fire, per-Tick protection and teaching-bug semantics are retained.
+Route: `#/prototype/cellular-material`. See its prototype README for precise bounds.
+Not yet Accepted. V0.2 remains deferred.
 
 ## Source-of-truth documents
 
@@ -150,4 +153,4 @@ This is not yet marked Accepted. V0.2 remains deferred.
 
 No active development task is assigned to `006`.
 
-007 V0.1 and 008 V0.1.1 are implemented; 008 awaits review. Wait for a new requirement; do not automatically continue any prototype into V0.2.
+007 V0.1 and 008 V0.1.2 are implemented; 008 awaits review. Wait for a new requirement; do not automatically continue any prototype into V0.2.

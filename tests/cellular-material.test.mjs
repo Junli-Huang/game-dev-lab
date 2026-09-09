@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 import ts from 'typescript';
 const dir = mkdtempSync(join(tmpdir(), 'decision-lab-test-'));
 after(() => rmSync(dir, { recursive: true, force: true }));
-for (const name of ['materials', 'random', 'world', 'movement', 'reactions', 'simulation', 'presets']) {
+for (const name of ['materials', 'random', 'world', 'movement', 'leveling', 'reactions', 'simulation', 'presets']) {
   const source = readFileSync(new URL(`../src/prototypes/cellular-material/${name}.ts`, import.meta.url), 'utf8');
   const { outputText } = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } });
   const path = join(dir, `${name}.mjs`); mkdirSync(dirname(path), { recursive: true });
@@ -85,4 +85,59 @@ test('brush clips boundaries, connected strokes have no gaps, Air erases',()=>{
 });
 test('last scan records actual history when the mode is changed',()=>{
  const w=new World();step(w);w.mode='bug';w.lateral='left';assert.deepEqual(w.lastScan,{bottomUp:true,forward:true});step(w);assert.deepEqual(w.lastScan,{bottomUp:false,forward:true});
+});
+const { findWaterDropDirection, moveMaterial } = await load('movement');
+const { findWaterLevelDirection, WATER_LEVEL_SEARCH_DISTANCE } = await load('leveling');
+const snapshot = w => w.cells.map(c=>c.material);
+const waterCount = w => w.cells.filter(c=>c.material==='water').length;
+function widePool() {
+ const w=new World(35,6);
+ for(let x=0;x<35;x++)w.set(x,5,'wood');
+ for(let y=0;y<5;y++){w.set(0,y,'wood');w.set(34,y,'wood')}
+ for(let x=1;x<34;x++)w.set(x,4,'water');
+ for(let x=5;x<=29;x++)w.set(x,3,'water');
+ w.set(17,2,'water');return w;
+}
+function heights(w){return Array.from({length:w.width-2},(_,i)=>w.cells.filter((c,j)=>j%w.width===i+1&&c.material==='water').length)}
+test('wide uneven pool defeats V0.1.1 rules, then levels and stays stable for 200 ticks',()=>{
+ const w=widePool(),count=waterCount(w);
+ // Every water cell is immobile under the exact V0.1.1 candidate rules.
+ for(let y=0;y<w.height;y++)for(let x=0;x<w.width;x++)if(at(w,x,y).material==='water'){
+   for(const dx of [0,-1,1]){const i=w.index(x+dx,y+1);assert.ok(i<0||w.cells[i].material!=='air')}
+   assert.equal(findWaterDropDirection(w,x,y).direction,undefined);
+ }
+ assert.ok(Math.max(...heights(w))-Math.min(...heights(w))>=2);
+ const first=findWaterLevelDirection(w,17,2);assert.ok(first.left.distance>6&&first.right.distance>6);
+ step(w);assert.equal(at(w,16,2).material,'water');assert.equal(w.stats.movedCells,1);assert.equal(at(w,16,2).updatedAt,1);
+ assert.equal(w.traces[w.index(17,2)].waterLevel.reason,'lowerSurface');
+ for(let i=0;i<300;i++){step(w);assert.equal(waterCount(w),count)}
+ assert.ok(Math.max(...heights(w))-Math.min(...heights(w))<=1);
+ const settled=snapshot(w);for(let i=0;i<200;i++){step(w);assert.deepEqual(snapshot(w),settled);assert.equal(w.stats.movedCells,0)}
+});
+test('Drop precedes level search, and internal water never levels',()=>{
+ const w=widePool();w.set(14,3,'air');w.tick=1;const drop=moveMaterial(w,w.index(17,2));assert.equal(drop.waterSearch.leftDropDistance,3);assert.equal(drop.chosen,'left');assert.equal(drop.waterLevel,undefined);
+ const v=widePool();const trace=findWaterLevelDirection(v,17,3);assert.equal(trace.isSurface,false);assert.equal(trace.direction,undefined);assert.equal(trace.reason,'internal');
+});
+test('long-range tie-break is deterministic for both tick parities and fixed left',()=>{
+ for(const [tick,lateral,direction] of [[1,'alternate','left'],[2,'alternate','right'],[2,'left','left']]){
+ const w=widePool();w.tick=tick;w.lateral=lateral;const a=findWaterLevelDirection(w,17,2);assert.equal(a.direction,direction);assert.deepEqual(a,findWaterLevelDirection(w,17,2));
+ }
+});
+test('surface search stops at barriers, disconnected pools and its finite range',()=>{
+ for(const material of ['wood','sand','fire']){
+ const w=widePool();w.set(15,2,material);w.set(19,2,material);assert.equal(findWaterLevelDirection(w,17,2).direction,undefined);
+ }
+ const v=widePool();for(let y=2;y<5;y++)v.set(15,y,'wood');for(let y=2;y<5;y++)v.set(19,y,'wood');
+ const leftBefore=v.cells.filter((c,i)=>i%v.width<15&&c.material==='water').length;
+ for(let i=0;i<50;i++)step(v);assert.equal(v.cells.filter((c,i)=>i%v.width<15&&c.material==='water').length,leftBefore);
+ const w=new World(65,6);for(let x=0;x<65;x++){w.set(x,5,'wood');w.set(x,4,'water');if(x>=5&&x<=59)w.set(x,3,'water')}w.set(32,2,'water');assert.equal(findWaterLevelDirection(w,32,2).direction,undefined);assert.equal(WATER_LEVEL_SEARCH_DISTANCE,24);
+});
+test('logical search can see past surface Water but never swaps into occupied adjacent cells',()=>{
+ const w=widePool();w.set(15,2,'water');const trace=findWaterLevelDirection(w,17,2);assert.ok(trace.left);w.set(16,2,'water');assert.equal(findWaterLevelDirection(w,17,2).left,undefined);
+});
+test('water tank and wide-pool presets settle with conserved count and no later oscillation',()=>{
+ for(const preset of ['waterTank','surfaceLevel']){
+ const w=createPreset(preset,12345),count=waterCount(w);for(let i=0;i<1200;i++)step(w);
+ const snap=snapshot(w);assert.equal(waterCount(w),count);for(let i=0;i<200;i++){step(w);assert.deepEqual(snapshot(w),snap);assert.equal(w.stats.movedCells,0)}
+ }
 });

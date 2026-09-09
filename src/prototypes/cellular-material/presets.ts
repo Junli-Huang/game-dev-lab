@@ -1,6 +1,6 @@
 import { World } from './world';
 import type { MaterialId } from './materials';
-export const PRESET_IDS = ['empty', 'sandPile', 'waterTank', 'fireTest', 'mixed'] as const;
+export const PRESET_IDS = ['empty', 'sandPile', 'waterTank', 'surfaceLevel', 'fireTest', 'mixed'] as const;
 export type PresetId = typeof PRESET_IDS[number];
 export function createPreset(id: PresetId, seed: number): World {
   const world = new World(120, 80, seed);
@@ -12,5 +12,9 @@ export function createPreset(id: PresetId, seed: number): World {
   if (id === 'waterTank' || id === 'mixed') tank();
   if (id === 'fireTest') { rect(35, 24, 50, 30, 'wood'); world.set(60, 39, 'fire', 90); }
   if (id === 'mixed') { rect(8, 43, 15, 12, 'wood'); world.set(15, 49, 'fire', 90); }
+  if (id === 'surfaceLevel') {
+    rect(42, 57, 35, 1, 'wood'); rect(42, 52, 1, 5, 'wood'); rect(76, 52, 1, 5, 'wood');
+    rect(43, 56, 33, 1, 'water'); rect(47, 55, 25, 1, 'water'); world.set(59, 54, 'water');
+  }
   return world;
 }

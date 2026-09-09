@@ -19,7 +19,7 @@ export function mountCellular(container: HTMLElement): () => void {
     <section class="cm-box"><div class="cm-options"><label>${text('cell.mode')} <select id="cm-mode"><option value="correct">${msg('cell.correct')}</option><option value="bug">${msg('cell.bug')}</option></select></label><label>${text('cell.lateral')} <select id="cm-lateral"><option value="alternate">${msg('cell.alternate')}</option><option value="left">${msg('cell.leftFirst')}</option></select></label></div><p class="cm-hint">${text('cell.policyHelp')}</p></section>
     <section id="cm-debug-panel" class="cm-box" hidden><h2>${text('cell.selected')}</h2><p>${text('cell.debugHelp')}</p><p id="cm-scan"></p><div id="cm-inspector"></div><h3>${text('cell.trace')}</h3><p class="cm-hint">${text('cell.traceHelp')}</p><div id="cm-trace"></div></section>
     <section class="cm-box"><h2>${text('cell.experiment')}</h2><p>${text('cell.experimentHelp')}</p></section>
-    <article class="explanation">${['rules','fire','order','determinism','limits'].map(id=>`<section><h2>${text(`cell.${id}Title`)}</h2><p>${text(`cell.${id}Help`)}</p></section>`).join('')}</article>
+    <article class="explanation">${['rules','level','fire','order','determinism','limits'].map(id=>`<section><h2>${text(`cell.${id}Title`)}</h2><p>${text(`cell.${id}Help`)}</p></section>`).join('')}</article>
   </main>`;
   const q = <T extends HTMLElement>(id: string) => container.querySelector<T>(`#${id}`)!;
   const canvas = container.querySelector('canvas')!;

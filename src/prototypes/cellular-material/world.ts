@@ -2,7 +2,9 @@ import { FIRE_RULES, type MaterialId, type Direction } from './materials';
 import { SeededRandom } from './random';
 export interface Cell { material: MaterialId; life: number; updatedAt: number }
 export interface RuleCheck { direction: Direction; result: 'free' | 'blocked' | 'boundary' | 'notWood' | 'ignited' | 'failedRoll'; roll?: number }
-export interface RuleTrace { waterSearch?: { leftDropDistance?: number; rightDropDistance?: number }; tick: number; material: MaterialId; from: number; to: number; checks: RuleCheck[]; chosen: Direction | 'stay' | 'burn' | 'expired' | 'static'; life?: number }
+export interface LevelCandidate { distance: number; surfaceY: number; dry: boolean }
+export interface WaterLevelTrace { isSurface: boolean; currentSurfaceY: number; leftObservedSurfaceY?: number; rightObservedSurfaceY?: number; left?: LevelCandidate; right?: LevelCandidate; direction?: 'left' | 'right'; reason: 'internal' | 'balancedOrBlocked' | 'lowerSurface' }
+export interface RuleTrace { waterLevel?: WaterLevelTrace; waterSearch?: { leftDropDistance?: number; rightDropDistance?: number }; tick: number; material: MaterialId; from: number; to: number; checks: RuleCheck[]; chosen: Direction | 'stay' | 'burn' | 'expired' | 'static'; life?: number }
 export type UpdateMode = 'correct' | 'bug';
 export type LateralPolicy = 'alternate' | 'left';
 export class World {

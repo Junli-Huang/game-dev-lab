@@ -1,92 +1,103 @@
-# 008 — Cellular Material Lab V0.1.1
+# 008 — Cellular Material Lab V0.1.2
 
-Interactive 120 × 80 cellular sandbox, fixed 30 Hz simulation, bilingual UI.
-Route: `#/prototype/cellular-material`.
+120 × 80 discrete-material sandbox, fixed 30 Hz, bilingual controls and traces.
+Route: `#/prototype/cellular-material`. **Implemented / pending review.**
 
-## Experiments
+## Surface Leveling
 
-Pause, choose Empty and brush 1, paint Sand, then Step Tick. One grain falls one
-cell. Reset and repeat with Bug mode: the top-down scan deliberately bypasses the
-movement guard, so the same grain can fall many rows in one tick. Top-down order
-alone with a valid guard would not cause this repeated-update bug.
+V0.1.1 stopped water oscillation by requiring a nearby lower opening. V0.1.2 adds
+long-range surface equalization without pressure simulation:
 
-Water on a solid floor now stays still without a lower opening. Compare Always Left with
-Alternate; the latter alternates both horizontal scan and neighbor preference by
-tick parity, reducing systematic directional bias without promising perfect symmetry.
-Fire Test demonstrates seeded orthogonal ignition and finite fire lifetime.
+Down → Diagonal → Nearby Drop → Long-range Surface Level Search → Stay.
 
-## Rules and state
+Drop Search remains unchanged: inspect at most 6 continuous Air cells horizontally,
+looking for Air immediately below, then move one cell toward the nearest opening.
+Level Search runs only after those rules fail and only on Water with no Water above.
+It inspects at most 24 columns, with vertical inspection also bounded to 24 rows.
 
-Air is empty/eraser. Sand tries down, then diagonals. Water additionally searches up to six Air cells horizontally for a lower opening. Movement only swaps with Air; grid edges are solid. Wood
-is static. Fire decrements life each tick, becomes Air at zero, otherwise tries
-orthogonal Wood with probability 0.12. Initial fire life is 30–90 ticks. Newly
-ignited Fire is stamped and does not actively update until the next tick.
+Level Search follows water-column boundaries. Adjacent columns must have overlapping
+Water intervals, preventing comparisons across disconnected pools. It can inspect
+through Water at the same surface row, but cannot physically move through it: the
+immediate destination must be Air. Solid material or a boundary terminates the
+search. A dry bank can be a terminal target if its empty landing cell touches the
+previous Water column; it never becomes a bridge through a solid barrier.
 
-The normal bottom-up in-place scan stamps `updatedAt` on moved particles and
-both swapped locations. No material actively updates more than once per tick.
-In-place updates let later cells observe earlier moves; a double buffer would
-read the old grid but also need destination-conflict resolution. This prototype
-intentionally exposes order dependence instead of hiding it.
+A target surface must be at least 2 rows lower. Surface means world-space top-row Y,
+not water depth (different floor depths must not be mistaken for uneven surfaces).
+Nearest qualifying target wins, then lower surface, then the existing deterministic
+left/alternate tie-break. Movement swaps Water with adjacent Air exactly one cell;
+normal updatedAt guards remain intact. No velocity, momentum, partial fill or RNG
+is introduced. Sand, Fire and the teaching bug's scan/guard semantics are unchanged.
 
-`movedCells` counts successful swaps in the latest tick (not distinct particles
-in Bug mode); `reactedCells` counts ignitions plus expirations. All 9,600 cells are
-scanned each tick. No active chunks or performance claims.
+## Try the wide pool
 
-Debug selects a coordinate instead of painting. It shows current material, last
-update stamp, six current neighbors, and the last active rule evaluation at that
-coordinate, including tick, source/destination, candidate occupancy and real fire
-rolls. The stored trace may belong to a prior occupant. Last scan records actual
-execution; next scan reflects current controls.
+Choose **Wide pool leveling**, pause, reset, enable Debug and inspect `(59, 54)`.
+Step once: both nearby-drop searches fail, but Level Search finds surfaces 13 cells
+away and 2 rows lower. The top unit moves one cell left on the first odd Tick.
+Continue to watch it reach the lower region and settle. Reset preserves pause and
+policy; use Alternate for this example. Under V0.1.1 every Water in this initial
+fixture has no legal move. The new rule genuinely adds behavior beyond six cells.
 
-## Determinism and controls
+Water Tank demonstrates the larger falling-water case. Empty, Sand Pile, Fire Test
+and Mixed remain available. Brushes 1/2/4/8 paint square areas; dragging interpolates
+strokes, holding paints each simulation tick, Air erases. Debug clicks inspect rather
+than paint. Apply Seed commits the input and resets; language changes preserve state.
 
-Seeded integer LCG, fixed rule order and tick-based lateral choice reproduce the
-same state for the same seed, initial grid and tick-indexed paint inputs. Wall-clock
-mouse events are not a recorded replay. Reset restores the selected preset and
-committed seed, preserving pause/mode/policy. Apply Seed commits the field and
-resets. Language changes preserve the simulation. Pointer dragging interpolates
-strokes; holding a pointer paints each simulation tick. Brushes are square 1/2/4/8.
+## Stable State and discrete surfaces
 
-## Code and validation
+Not every cell needs to move every Tick. One cell holds one complete material unit,
+so a surface difference of one cell is legitimate discrete balance. Tested wide
+pools reach max/min column-height difference ≤ 1, then remain unchanged for 200
+additional ticks with movedCells = 0. updatedAt still records evaluation ticks and
+is not part of the material-grid stability comparison.
 
-Read materials → world/random → movement/reactions → simulation → presets →
-renderer/prototype. Simulation modules have no DOM dependency.
+The rule is bounded and local: it does not guarantee global equilibrium for every
+shape, long pipe or distant pool. Targets beyond 24 columns/rows remain invisible;
+higher obstructing surfaces and non-overlapping water columns stop this search.
+Complex pressure transfer, siphons, sealed-space pressure, distant water columns,
+partial fill, Navier–Stokes, SPH, CFD and volume/pressure solvers are not modeled.
 
-16 core tests cover movement/guard/bias, bug cascade, fire lifetime/seed/new-fire
-guard, deterministic replay/reset, conservation, boundaries, painting and scan
-history. Browser checks cover painting, Step, traces, bug mode, reset determinism,
-language preservation, mobile layout and route cleanup. Full repository: 38 tests.
+## Other material and execution rules
 
-V0.2 is deferred: no pressure, sand/water exchange, temperature, water extinguishing,
-chunks, GPU, save/load or Step Cell. Local rules produce piles, spreading and fire
-fronts; they are a teaching model, not a physically complete material simulation.
+Sand tries down, diagonals, then stays. All movement enters Air only; no sand/water
+exchange. Edges are solid. Wood is static. Fire decrements finite 30–90 Tick life,
+expires to Air, and otherwise ignites orthogonal Wood with seeded probability 0.12.
+Newly ignited Fire waits until the next Tick before acting.
 
-## Water Horizontal Movement
+Normal mode scans bottom-up and stamps both swapped cells. Bug mode deliberately
+scans top-down AND bypasses the movement guard, showing multiple moves per Tick;
+fire retains its guard. Top-down order alone with a guard is not this bug.
+In-place updates see earlier changes. Double buffering would read old cells but
+would additionally need destination-conflict resolution. All 9,600 cells are scanned.
 
-Water does not move forever just because an adjacent cell is Air.
-Down → Diagonal → Search nearby lower opening → Move one horizontal cell toward
-it → Stay. Search is bounded by WATER_SPREAD_DISTANCE = 6 and stops at non-Air
-or the boundary. An opening requires Air at the searched coordinate and directly
-below it. Prefer the nearer drop; equal distances use Always Left or tick-parity
-Alternate. Debug records both search distances (or No Drop), only when the search
-actually ran. It does not label this decision as ordinary Left/Right free.
+movedCells counts successful swaps in the latest Tick, not distinct particles in
+Bug mode. reactedCells counts ignitions plus expirations. The seeded integer LCG
+and fixed order reproduce identical tick-indexed inputs; live mouse timing is not
+a recorded replay. No chunks, sleeping cells, optimization or physics claims.
 
-## Stable State
+## Debug and code
 
-Cellular simulation does not require every cell to move every tick. A flat water
-body with no lower opening legally stays still. The stable-state test compares
-material grids through another 200 ticks and requires zero moves at each tick;
-updatedAt remains an execution stamp and therefore still changes when evaluated.
+Traces describe the last active evaluation at a fixed coordinate, possibly a prior
+occupant. Current neighbors and updatedAt are separate from that historical trace.
+Level traces show surface eligibility, source/target Y, height difference, distance,
+dry-bank targets, nearest observed surfaces and the movement/Stay reason. A failed
+search reports balanced-or-blocked within bounds, not an unsupported global-balance
+claim. Higher-priority rules do not fabricate unexecuted Level Search results.
 
-## Why no Pressure?
+Read materials → world/random → movement/leveling/reactions → simulation → presets
+→ renderer/prototype. Core modules are DOM-free.
 
-V0.1.1 remains a Discrete Cellular Liquid, not Navier–Stokes, a Pressure Solver,
-a Volume Field or Continuous Fluid Dynamics. It approximates gameplay liquids
-with simple local rules. A drop beyond six cells or behind another material is
-not visible to this search; full pressure/volume equalization is not promised.
+## Validation and history
 
-## Version history
+44 repository tests include the V0.1.1 stability regressions, proof that the wide
+fixture has no old-rule move, new one-cell progression, conserved water, eventual
+balance and another 200 stable Ticks, Drop priority, internal cells, barriers,
+logical connectivity, bounded search and deterministic ties. Both Water Tank and
+Wide pool presets settle after extended runs. Browser checks cover controls,
+English/Chinese traces, reset, route lifecycle and mobile layout.
 
-- V0.1: Air/Sand/Water/Wood/Fire, local movement, update order, seeded randomness and Debug.
-- V0.1.1: fixes periodic horizontal Water oscillation. Horizontal movement seeks
-  nearby lower openings and stays still without one. Implemented / pending review.
+- V0.1: five materials, local movement, update-order experiments, seeded Fire, Debug.
+- V0.1.1: nearby-drop horizontal movement eliminates periodic flat-floor oscillation.
+- V0.1.2: long-range connected-surface equalization, then stable discrete balance.
+
+V0.1.2 awaits review; not Accepted. V0.2 remains deferred.
